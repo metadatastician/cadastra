@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: MPL-2.0
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+#
+# THE UUID IS DERIVED, NOT ALLOCATED. The registry spec
+# (gv-clade-index: docs/SPEC-clade-verisim-portal.adoc §Identity Model) defines it as:
+#
+#     uuid = UUIDv5(namespace = URL, name = "github.com/<primary-owner>/<canonical-name>")
+#
+# So it is a fact anyone can recompute and check, not a choice. The value below was
+# derived that way, and the method was verified first by reproducing the registry's
+# own worked examples byte-for-byte before it was trusted:
+#     januskey          -> e216170e-ff47-5a5c-bbdd-15e61c8190c8
+#     gv-clade-index    -> c88e9ff3-9aac-5de8-b891-19b5de64aedd
+#     rsr-template-repo -> a5ea1382-a34c-5334-8a46-a2ebe904c810
+# Recompute this file's value with:
+#     uuidgen --sha1 --namespace @url --name "github.com/metadatastician/cadastra"
+#
+# OWNER PATH NOTE. The registry's own sync script (sync/deploy-clade-a2ml.sh:80)
+# hardcodes the owner segment to `hyperpolymath`. This repo is born in
+# `metadatastician`, so that script would recompute a DIFFERENT uuid for it. The
+# name below is derived from the owner path that is TRUE TODAY, per the precedent
+# set by chronicles-of-slavia's CLADE ("the UUID is derived FROM the owner path, so
+# the UUID changes with it. This file records what is TRUE TODAY"). The hardcoded
+# owner in deploy-clade-a2ml.sh is reported to the owner as a defect, not worked
+# around here.
+#
+# NOT INHERITED. This file was written from the derivation above, not carried over
+# from the template. A repo instantiated from rsr-template-repo inherits the
+# template's literal identity (uuid a5ea1382-…, canonical-name `rsr-template-repo`)
+# because `just init` never touches CLADE.a2ml — the same bug chronicles-of-slavia
+# was corrected for on 2026-07-16, and which paint-type and scaffoldia still carry.
+
+[identity]
+uuid = "da97ea76-1715-5331-963b-27f011b10d22"
+primary-forge = "github"
+primary-owner = "metadatastician"
+canonical-name = "cadastra"
+prefixed-name = "rm-cadastra"
+
+[clade]
+primary = "rm"
+secondary = []
+assigned = "2026-07-16"
+rationale = "Repo Management & Tooling (`rm`): the core value proposition is surveying and triaging the estate's repos — the estate-migration-toolkit and the triage reports it produces. `gv` is deliberately NOT claimed as a secondary: Cadastra reports what the estate IS, it does not set or enforce policy; that authority stays with standards and metadatastician-governance. Per the registry spec, the primary clade reflects the core value proposition, not implementation details."
+
+[forges]
+github = "metadatastician/cadastra"
+gitlab = ""       # populated if/when mirrored
+bitbucket = ""    # populated if/when mirrored
+
+[lineage]
+type = "standalone"
+parent = ""                             # no monorepo parent; `standalone` per spec
+born = "2026-07-16"                     # first commit
+previous-names = []
+instantiated-from = "rsr-template-repo"
+
+[status]
+# One of: reserved incubating active dormant | merged superseded archived extinct
+phase = "incubating"        # born today; content present but nothing proven or registered yet
+since = "2026-07-16"
+present = true
+aliases = []
+merged-into = ""
+superseded-by = ""
+successors = []
+ended = ""
+
+[[status.history]]
+phase = "incubating"
+since = "2026-07-16"
+note = "initial declaration; not yet registered in gv-clade-index"
+
+# ---------------------------------------------------------------------------
+# REGISTRATION STATUS: NOT REGISTERED.
+#
+# `cadastra` does not appear in gv-clade-index (verisim/seed/repos.a2ml). The UUID
+# above is correctly derived and self-checking, but DERIVING an identity is not the
+# same as REGISTERING one. Registration is outward-facing, so it is the owner's to
+# do (doctrine 11, stop-first); an agent must not.
+#
+# To register, per gv-clade-index docs/developer/REPO-ONBOARDING.adoc (itself marked
+# SKETCH / not yet complete):
+#   1. add the entry to verisim/seed/repos.a2ml
+#   2. run sync/deploy-clade-a2ml.sh  — NOTE: will recompute a hyperpolymath-namespaced
+#      uuid and overwrite the value above; see OWNER PATH NOTE at the head of this file
+#   3. run sync/seed-verisim.sh, then verify against dashboard.vcl / orphans.vcl
+# ---------------------------------------------------------------------------

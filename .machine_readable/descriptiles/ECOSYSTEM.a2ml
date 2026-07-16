@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: MPL-2.0
+# ECOSYSTEM.a2ml — Ecosystem position
+#
+# REWRITTEN FOR THIS REPO 2026-07-16. The template ships this file describing
+# rsr-template-repo's OWN position, with a "NOTE FOR CONSUMERS" saying to replace
+# it. `just init` does not do that (it substitutes {{PLACEHOLDER}} tokens only, and
+# this file has none), so an uncorrected instantiation silently claims to BE the
+# template. Same class of bug as the inherited CLADE identity — see CLADE.a2ml.
+
+[metadata]
+project = "cadastra"
+ecosystem = "metadatastician"
+
+[position]
+type = "survey-and-register"
+purpose = "Canonical register and survey of the estate's repos: houses the estate-migration-toolkit and the triage reports it produces. Answers 'what is actually out there, and what state is it in' — as observed, by running the tool, not as claimed by status docs."
+# IS-NOT — anti-identity (the boundary-erosion guard; each line is a real confusion to prevent)
+what-this-is-not = [
+  "gv-clade-index — the estate's IDENTITY registry (who a repo IS, its uuid/clade). Cadastra records OBSERVED STATE (languages, anti-patterns, freshness). A survey is not an identity registry; do not merge them.",
+  "rsr-template-repo — the scaffold this repo was instantiated from, not what it is.",
+  "standards / metadatastician-governance — the canon and policy authority. Cadastra REPORTS what the estate is; it does not decide what the estate ought to be, and its CSV is not a policy verdict.",
+  "a migration executor — the toolkit's mutating scripts (migrate-deno-to-bun.sh, rollout-language-gate.sh, deprecate-poly-mcps.sh) are HOUSED here, but running them against the estate is the owner's act, not this repo's identity.",
+  "a source of truth about repos it cannot see — the report covers what the scanning credential could read at scan time; absence from it is not evidence of absence.",
+]
+
+[pipeline]
+position = "observer"
+chain = "estate repos → estate-scan.sh → estate-triage-report.csv → (owner triage: KILL / MIGRATE / CLEAN)"
+notes = "Read-only by design: the scan clones to temp dirs and never writes to a scanned repo. The report is a dated observation, not a live view — it is stale the moment a scanned repo changes."
+coordination = "self"
+
+[related-projects]
+projects = [
+  { name = "gv-clade-index", relationship = "identity-registry", notes = "Holds repo identity (uuid/clade). Cadastra is the complementary observed-state survey. Cadastra is NOT registered there — registration is the owner's act (doctrine 11)." },
+  { name = "standards", relationship = "standard-source", notes = "Defines the language policy and anti-patterns the scan detects. Cadastra observes conformance; it does not define it." },
+  { name = "metadatastician-governance", relationship = "policy-authority", notes = "Adoption, authority, assurance and contribution governance for this org." },
+  { name = "rsr-template-repo", relationship = "instantiated-from", notes = "The scaffold. See CLADE.a2ml for the identity-inheritance bug corrected at birth here." },
+]
+
+# ---------------------------------------------------------------------------
+# DATA SENSITIVITY — THIS REPO MUST NOT BE MADE PUBLIC AS-IS.
+#
+# docs/status/estate-triage-report.csv enumerates 46 repos that are PRIVATE on
+# GitHub (45 hyperpolymath, 1 metadatastician) — by name, description, language
+# mix, and detected anti-patterns (incl. security-relevant NIF_WITHOUT_SNIF and
+# DIRECT_FFI_NO_HEXADECA). Publishing it would disclose all of that, permanently
+# and irrecoverably: it would live in git history, and GitHub caches and indexes
+# content even after deletion.
+#
+# The repo is PRIVATE for this reason — a deliberate decision, not a default.
+# Before any change to public/internal visibility, strip or filter the report.
+# ---------------------------------------------------------------------------

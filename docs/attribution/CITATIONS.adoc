@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Cadastra - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{Cadastra_2026,
+  author = {Jewell, Jonathan D.A.},
+  title = {Cadastra},
+  year = {2026},
+  url = {https://github.com/metadatastician/Cadastra},
+  license = {MPL-2.0}
+}
+----
+
+== Harvard Style
+
+Jewell, J. (2026) _Cadastra_ [Computer software]. Available at: https://github.com/metadatastician/Cadastra
+
+== OSCOLA
+
+Jonathan D.A. Jewell, 'Cadastra' (2026) <https://github.com/metadatastician/Cadastra>
+
+== MLA
+
+Jewell, Jonathan D.A. "Cadastra." 2026, github.com/metadatastician/Cadastra.
+
+== APA 7
+
+Jewell, J. (2026). _Cadastra_ [Computer software]. GitHub. https://github.com/metadatastician/Cadastra
+
+== See Also
+
+* link:CITATION.cff[CITATION.cff]
