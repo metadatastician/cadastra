@@ -103,3 +103,4 @@ tools/estate-migration-toolkit/scripts/estate-scan.sh \
 Requires `gh` (authenticated), `jq`, and `git`. Writes `estate-triage-report.csv`
 to the current directory. The scan is read-only: it clones to `mktemp -d` temp dirs
 and removes them; it never writes to a scanned repo.
+# probe
