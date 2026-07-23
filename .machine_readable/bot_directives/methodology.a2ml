@@ -55,7 +55,7 @@ perfective = 10   # % for SPDX headers, doc updates, formatting, style
 # Customise this per project — the template default is generic.
 
 [methodology.unique-strength]
-description = "{{PROJECT_UNIQUE_STRENGTH}}"
+description = "Cadastra reports the estate as OBSERVED, not as claimed. Every row in the triage report comes from running the scanner over real repos — never from a status document, and never from an agent's recollection. That is the whole value: it is checkable. DEEPEN that — better observation, honestly stated limits, reproducible runs, fewer false positives. Do NOT broaden it into policy (that is standards and metadatastician-governance), into remediation (the toolkit's mutating scripts are housed here but running them is the owner's act), or into identity (that is gv-clade-index). A survey that starts deciding what ought to be true has stopped being a survey."
 deepen-not-broaden = true
 
 # ============================================================================
@@ -101,7 +101,16 @@ constraints = [
 # These rules detect corrupt/template/stale state files.
 
 [methodology.state-validation]
-reject-if-contains = ["{{PLACEHOLDER}}", "CADASTRA", "rsr-template-repo"]
+# These strings are MARKERS OF TEMPLATE RESIDUE — a state file containing one has
+# not been filled in. The middle entry read "CADASTRA" until 2026-07-17, which is
+# this project's own name and could never indicate residue. The template ships
+# `"{{PROJECT}}"` here, meaning "reject a file still holding the unsubstituted
+# {{PROJECT}} token" — but {{PROJECT}} IS in `just init`'s SED_ARGS, so init
+# substituted it (to PROJECT_UPPER) and destroyed the very marker it was meant to
+# preserve. The gate then rejected any state file mentioning CADASTRA, i.e. this
+# repo's own name, while no longer detecting the residue it exists to catch.
+# Reported upstream; see rsr-template-repo PR #144 for the wider init/identity fix.
+reject-if-contains = ["{{PLACEHOLDER}}", "{{PROJECT}}", "rsr-template-repo"]
 reject-if-project-name-mismatch = true
 staleness-threshold-days = 90
 fallback-files = ["TODO.md", "TODO.adoc", "ROADMAP.adoc", "README.adoc"]
