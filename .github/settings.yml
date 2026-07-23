@@ -7,15 +7,16 @@
 # applied by the probot/settings app when changes are pushed to the default
 # branch. Install the app at: https://github.com/apps/settings
 #
-# Template file — replace cadastra and {{DESCRIPTION}} with actual values.
+# Repository settings. NOTE private: true is deliberate — see the DATA SENSITIVITY
+# note in .machine_readable/descriptiles/ECOSYSTEM.a2ml before changing it.
 
 # ─── Repository Settings ───────────────────────────────────────────────────────
 
 repository:
   name: "cadastra"
-  description: "{{DESCRIPTION}}"
-  homepage: "https://github.com/hyperpolymath/cadastra"
-  private: false
+  description: "Canonical register and survey of the estate's repos: houses the estate-migration-toolkit and the triage reports it produces."
+  homepage: "https://github.com/metadatastician/cadastra"
+  private: true
   has_issues: true
   has_projects: true
   has_wiki: false
