@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# cadastra.launcher.a2ml — per-app launcher config for Cadastra.
+# Compliant with launcher-standard.a2ml v0.3.0
+#
+# Cadastra: Canonical register and survey of the hyperpolymath estate
+
+[project]
+name         = "cadastra"
+display      = "Cadastra"
+description  = "Canonical register and survey of the hyperpolymath estate"
+categories   = ["Development", "Utility"]
+version      = "0.1.0"
+license      = "MPL-2.0"
+
+[repo]
+# NOTE: repo-dir is resolved at runtime from the launcher script location.
+# Do NOT hardcode absolute paths. Leave empty or use relative paths.
+path = ""
+
+[runtime]
+# Cadastra is a process-based application
+kind = "process"
+startup-command-search = [
+    "{repo-dir}/target/release/cadastra",
+    "{repo-dir}/cadastra",
+    "cadastra",
+]
+# Per launcher-standard.a2ml [runtime] section:
+# PID files MUST use XDG_RUNTIME_DIR or TMPDIR, NEVER /tmp directly
+# Log files MUST use XDG_STATE_HOME, NEVER /tmp directly
+pid-file = "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/cadastra.pid"
+log-file = "${XDG_STATE_HOME:-$HOME/.local/state}/cadastra/cadastra.log"
+wait-for-url-timeout-seconds = 10
+
+[version-output]
+# Per launcher-standard.a2ml [version-output] section
+first-line-format = "cadastra {version} ({build-sha-short}) [{platform}]"
+example = "cadastra 0.1.0 (abc1234) [linux-x86_64]"
+exit-code = 0
+
+[icon]
+source = "{repo-dir}/assets/icon-256.png"
