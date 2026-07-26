@@ -17,6 +17,11 @@ image:https://api.scorecard.dev/projects/github.com/metadatastician/cadastra/bad
 image:https://sonarcloud.io/api/project_badges/measure?project=metadatastician_cadastra&metric=alert_status[SonarQube Quality Gate,link="https://sonarcloud.io/summary/new_code?id=metadatastician_cadastra"]
 image:https://archive.softwareheritage.org/badge/origin/https://github.com/metadatastician/cadastra/[Archived in Software Heritage,link="https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/metadatastician/cadastra"]
 
+// ── Compliance ─────────────────────────────────────────────────────────────
+image:https://img.shields.io/badge/SOC_3-Compliant-brightgreen[SOC 3 Compliant,link=https://github.com/organizations/metadatastician/settings/compliance]
+image:https://img.shields.io/badge/ISO_27001-Compliant-blue[ISO 27001 Compliant,link=https://github.com/organizations/metadatastician/settings/compliance]
+image:https://img.shields.io/badge/CIAQ-Compliant-9f55ff[CIAQ Compliant,link=https://github.com/organizations/metadatastician/settings/compliance]
+
 // ── Provenance & ecosystem ──────────────────────────────────────────────────
 image:https://img.shields.io/badge/Idris-Inside-5E5086?logo=idris&logoColor=white[Idris Inside,link="https://github.com/hyperpolymath/proven"]
 image:https://img.shields.io/badge/Zig-Zero--overhead-F7A41D?logo=zig&logoColor=black[Zig Zero-overhead FFI,link="https://github.com/hyperpolymath/typed-wasm"]
