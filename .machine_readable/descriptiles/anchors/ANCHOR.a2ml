@@ -20,9 +20,9 @@ purpose = [
 
 [identity]
 project = "Cadastra"
-kind = "{{PROJECT_KIND}}"                # language | library | service | tool
+kind = "tool"                            # language | library | service | tool
 one-sentence = "Canonical register and survey of the hyperpolymath estate: houses the estate-migration-toolkit and its triage reports."
-domain = "{{PROJECT_DOMAIN}}"
+domain = "estate-survey"                 # observing repo state; NOT policy (standards) or identity (gv-clade-index)
 
 [semantic-authority]
 policy = "canonical"
