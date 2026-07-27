@@ -12,7 +12,8 @@ image:https://img.shields.io/badge/Provenance-Quantum--Safe-blueviolet[Quantum-S
 
 // ── Standard & quality gates ────────────────────────────────────────────────
 image:https://img.shields.io/badge/RSR-Rhodium_Standard-9C27B0[Rhodium Standard Repository,link="https://github.com/hyperpolymath/rhodium-standard-repositories"]
-image:https://www.bestpractices.dev/projects/{{OPENSSF_BP_ID}}/badge[OpenSSF Best Practices,link="https://www.bestpractices.dev/projects/{{OPENSSF_BP_ID}}"]
+// OpenSSF Best Practices badge: added once this repo is registered at
+// https://www.bestpractices.dev/ (no project ID exists yet).
 image:https://api.scorecard.dev/projects/github.com/metadatastician/cadastra/badge[OpenSSF Scorecard,link="https://scorecard.dev/viewer/?uri=github.com/metadatastician/cadastra"]
 image:https://sonarcloud.io/api/project_badges/measure?project=hyperpolymath_cadastra&metric=alert_status[SonarQube Quality Gate,link="https://sonarcloud.io/summary/new_code?id=hyperpolymath_cadastra"]
 image:https://archive.softwareheritage.org/badge/origin/https://github.com/metadatastician/cadastra/[Archived in Software Heritage,link="https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/metadatastician/cadastra"]
@@ -29,41 +30,41 @@ image:https://api.thegreenwebfoundation.org/greencheckimage/github.com[Green Web
 
 Canonical register and survey of the hyperpolymath estate: houses the estate-migration-toolkit and its triage reports.
 
-[IMPORTANT]
-====
-*This file is a template.* You are reading `README.adoc` from the *RSR template repo*
-(or a freshly-cloned copy of it). Run `just init` to replace every `{{PLACEHOLDER}}`
-token with your project's details, then delete this admonition. Until you do, the
-`{{...}}` markers below are intentional placeholders, not content.
-====
-
 == What this is
 
-A new repository scaffolded from the *Rhodium Standard Repository (RSR)* template:
-a batteries-included starting point that ships with CI/CD, machine-readable project
-metadata, an AI-agent gatekeeper protocol, a formally-typed ABI/FFI seam
-(Idris2 + Zig), container and reproducible-build scaffolding, and governance
-infrastructure — all wired and passing the RSR validators on day one.
+Cadastra is the estate's *observer*: it scans the repos under the
+`hyperpolymath` and `metadatastician` GitHub orgs (plus local checkouts),
+classifies each one (`CLEAN` / `MIGRATE` / `KILL` / `DONE` / `FORK`), flags
+anti-patterns (banned languages, missing Hexadeca FFI layering, Deno-not-Bun,
+etc.), and writes the result to `docs/status/estate-triage-report.csv` — the
+canonical answer to "what is actually out there, and what state is it in",
+as observed by running the tool, not as claimed by status docs.
 
-Replace this section with a description of *your* project once initialised.
+It was scaffolded from the *Rhodium Standard Repository (RSR)* template, so it
+also ships with CI/CD, machine-readable project metadata, an AI-agent
+gatekeeper protocol, a formally-typed ABI/FFI seam (Idris2 + Zig) used as the
+scaffold's reference example, container and reproducible-build scaffolding,
+and governance infrastructure.
+
+See `.machine_readable/descriptiles/anchors/ANCHOR.a2ml` and `CLAUDE.md` for
+the authoritative identity record (IS / IS-NOT boundaries).
 
 == Quick start
 
 [source,bash]
 ----
-# 1. Create a repo from this template (or clone it), then from the repo root:
-just init                # interactive bootstrap: fills every {{PLACEHOLDER}}
+# From the repo root:
+just                       # lists all phases (build, test, validate, audit, ...)
 
-# 2. See the available tasks:
-just                     # lists all phases (build, test, validate, audit, ...)
+# Run the estate scan (writes estate-triage-report.csv):
+./tools/estate-migration-toolkit/scripts/estate-scan.sh --github hyperpolymath metadatastician
 
-# 3. Check the repo still satisfies the RSR shape:
-just validate            # structure + metadata checks
+# Check the repo still satisfies the RSR shape:
+just validate               # structure + metadata checks
 ----
 
-`just init` prompts for the project name, owner, author, licence contact, and the
-other values listed in `.machine_readable/ai/PLACEHOLDERS.adoc`, substitutes them
-across the tree, validates the result, and (if available) runs the `k9-svc` checks.
+See `tools/estate-migration-toolkit/README.md` for the full toolkit (rollout,
+deprecation, and migration scripts that consume the triage report).
 
 == What you get
 

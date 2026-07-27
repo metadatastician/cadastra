@@ -1,22 +1,8 @@
-# Security Policy
-
-<!-- 
-============================================================================
-TEMPLATE INSTRUCTIONS (delete this block before publishing)
-============================================================================
-Replace all {{PLACEHOLDER}} values with your information:
-  Squisher Corpus     - Your project name
-  hyperpolymath            - GitHub username or org (e.g., hyperpolymath)
-  squisher-corpus             - Repository name
-  j.d.a.jewell@open.ac.uk   - Security contact email
-  TBD  - Your PGP key fingerprint (40 chars, no spaces)
-  https://github.com/hyperpolymath.gpg      - URL to your public PGP key
-  github.com/hyperpolymath/squisher-corpus          - Your website/domain
-  2026     - Current year for copyright
-
-Optional: Remove sections that don't apply (e.g., PGP if you don't use it)
-============================================================================
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -->
+# Security Policy
 
 We take security seriously. We appreciate your efforts to responsibly disclose vulnerabilities and will make every effort to acknowledge your contributions.
 
@@ -40,7 +26,7 @@ We take security seriously. We appreciate your efforts to responsibly disclose v
 
 The preferred method for reporting security vulnerabilities is through GitHub's Security Advisory feature:
 
-1. Navigate to [Report a Vulnerability](https://github.com/hyperpolymath/squisher-corpus/security/advisories/new)
+1. Navigate to [Report a Vulnerability](https://github.com/metadatastician/cadastra/security/advisories/new)
 2. Click **"Report a vulnerability"**
 3. Complete the form with as much detail as possible
 4. Submit — we'll receive a private notification
@@ -59,12 +45,12 @@ If you cannot use GitHub Security Advisories, you may email us directly:
 | | |
 |---|---|
 | **Email** | j.d.a.jewell@open.ac.uk |
-| **PGP Key** | [Download Public Key](https://github.com/hyperpolymath.gpg) |
-| **Fingerprint** | `TBD` |
+| **PGP Key** | [Download Public Key](https://github.com/metadatastician.gpg) |
+| **Fingerprint** | `TBD (not yet registered)` |
 
 ```bash
 # Import our PGP key
-curl -sSL https://github.com/hyperpolymath.gpg | gpg --import
+curl -sSL https://github.com/metadatastician.gpg | gpg --import
 
 # Verify fingerprint
 gpg --fingerprint j.d.a.jewell@open.ac.uk
@@ -203,7 +189,7 @@ If we cannot reach agreement on disclosure timing, we default to 90 days from yo
 
 The following are within scope for security research:
 
-- This repository (`hyperpolymath/squisher-corpus`) and all its code
+- This repository (`metadatastician/cadastra`) and all its code
 - Official releases and packages published from this repository
 - Documentation that could lead to security issues
 - Build and deployment configurations in this repository
@@ -322,8 +308,8 @@ Recognition includes:
 To stay informed about security updates:
 
 - **Watch this repository**: Click "Watch" → "Custom" → Select "Security alerts"
-- **GitHub Security Advisories**: Published at [Security Advisories](https://github.com/hyperpolymath/squisher-corpus/security/advisories)
-- **Release notes**: Security fixes noted in [CHANGELOG](CHANGELOG.md)
+- **GitHub Security Advisories**: Published at [Security Advisories](https://github.com/metadatastician/cadastra/security/advisories)
+- **Release notes**: Security fixes noted in [CHANGELOG](../CHANGELOG.md)
 
 ### Update Policy
 
@@ -348,7 +334,7 @@ To stay informed about security updates:
 
 ## Security Best Practices
 
-When using Squisher Corpus, we recommend:
+When using Cadastra, we recommend:
 
 ### General
 
@@ -370,9 +356,9 @@ When using Squisher Corpus, we recommend:
 
 ## Additional Resources
 
-- [Our PGP Public Key](https://github.com/hyperpolymath.gpg)
-- [Security Advisories](https://github.com/hyperpolymath/squisher-corpus/security/advisories)
-- [Changelog](CHANGELOG.md)
+- [Our PGP Public Key](https://github.com/metadatastician.gpg)
+- [Security Advisories](https://github.com/metadatastician/cadastra/security/advisories)
+- [Changelog](../CHANGELOG.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
 - [CVE Database](https://cve.mitre.org/)
 - [CVSS Calculator](https://www.first.org/cvss/calculator/3.1)
@@ -383,9 +369,9 @@ When using Squisher Corpus, we recommend:
 
 | Purpose | Contact |
 |---------|---------|
-| **Security issues** | [Report via GitHub](https://github.com/hyperpolymath/squisher-corpus/security/advisories/new) or j.d.a.jewell@open.ac.uk |
-| **General questions** | [GitHub Discussions](https://github.com/hyperpolymath/squisher-corpus/discussions) |
-| **Other enquiries** | See [README](README.md) for contact information |
+| **Security issues** | [Report via GitHub](https://github.com/metadatastician/cadastra/security/advisories/new) or j.d.a.jewell@open.ac.uk |
+| **General questions** | [GitHub Discussions](https://github.com/metadatastician/cadastra/discussions) |
+| **Other enquiries** | See [README](../README.adoc) for contact information |
 
 ---
 
@@ -399,7 +385,7 @@ This security policy may be updated from time to time. Significant changes will 
 
 ---
 
-*Thank you for helping keep Squisher Corpus and its users safe.* 🛡️
+*Thank you for helping keep Cadastra and its users safe.* 🛡️
 
 ---
 
