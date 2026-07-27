@@ -54,7 +54,8 @@ while IFS= read -r -d '' f; do
         warn "Missing SPDX header: $f"
         MISSING_SPDX=$((MISSING_SPDX + 1))
     fi
-done < <(find src/ -type f \( -name "*.rs" -o -name "*.zig" -o -name "*.res" -o -name "*.ex" -o -name "*.exs" -o -name "*.gleam" -o -name "*.idr" -o -name "*.sh" \) -print0 2>/dev/null)
+done < <(find src/ -type f \( -name "*.rs" -o -name "*.zig" -o -name "*.res" -o -name "*.ex" -o -name "*.exs" -o -name "*.gleam" -o -name "*.idr" -o -name "*.sh" \) \
+    ! -path "*/.zig-cache/*" ! -path "*/zig-cache/*" ! -path "*/zig-out/*" -print0 2>/dev/null)
 
 if [ "$MISSING_SPDX" -eq 0 ]; then
     pass "All source files have SPDX headers"
@@ -67,8 +68,9 @@ fi
 # ═══════════════════════════════════════════════════════════════════════
 bold "Aspect 2: Dangerous patterns"
 
-# Idris2 dangerous patterns
-DANGEROUS_IDRIS=$(grep -rn 'believe_me\|assert_total\|really_believe_me' src/abi/ 2>/dev/null | grep -v "^Binary" | grep -v "test" || true)
+# Idris2 dangerous patterns (case-tolerant: canonical src/interface/Abi/,
+# or a lowercase src/interface/abi/ some downstream repos ship)
+DANGEROUS_IDRIS=$(grep -rn 'believe_me\|assert_total\|really_believe_me' src/interface/Abi/ src/interface/abi/ 2>/dev/null | grep -v "^Binary" | grep -v "test" || true)
 if [ -n "$DANGEROUS_IDRIS" ]; then
     fail "Dangerous Idris2 patterns found:"
     echo "$DANGEROUS_IDRIS" | head -5
@@ -76,8 +78,13 @@ else
     pass "No dangerous Idris2 patterns (believe_me, assert_total)"
 fi
 
-# Coq/Lean dangerous patterns
-DANGEROUS_PROOF=$(grep -rn '\bAdmitted\b\|\bsorry\b\|\bunsafeCoerce\b\|\bObj\.magic\b' src/ verification/ 2>/dev/null | grep -v "test" | grep -v "comment" || true)
+# Coq/Lean dangerous patterns. Scoped to actual proof-source extensions (not
+# .adoc/.md) and excludes lines that *describe* the ban (e.g. "NO Admitted
+# allowed", a doc bullet "- `sorry` (Lean4)") rather than use the pattern.
+DANGEROUS_PROOF=$(find src/ verification/ -type f \( -name "*.v" -o -name "*.lean" -o -name "*.agda" -o -name "*.idr" -o -name "*.hs" \) 2>/dev/null \
+    -exec grep -Hn '\bAdmitted\b\|\bsorry\b\|\bunsafeCoerce\b\|\bObj\.magic\b' {} + 2>/dev/null \
+    | grep -v "test" | grep -v "comment" \
+    | grep -viE 'no .*(allowed|permitted)|not allowed|\bbanned\b|\bforbidden\b|\(Lean4\)|\(Coq\)|\(Haskell\)' || true)
 if [ -n "$DANGEROUS_PROOF" ]; then
     fail "Dangerous proof patterns found:"
     echo "$DANGEROUS_PROOF" | head -5

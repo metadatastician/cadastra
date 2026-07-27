@@ -18,10 +18,10 @@ set positional-arguments := true
 # Re-generate with: contractile gen-just
 import? "build/contractile.just"
 
-# Project metadata — customize these
-project := "rsr-template-repo"
-OWNER := "hyperpolymath"
-REPO := "rsr-template-repo"
+# Project metadata
+project := "cadastra"
+OWNER := "metadatastician"
+REPO := "cadastra"
 version := "0.1.0"
 tier := "infrastructure"  # 1 | 2 | infrastructure
 
@@ -85,41 +85,29 @@ import? "build/just/assess.just"
 # BUILD & COMPILE
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Build the project (debug mode)
+# Build the project (debug mode): the Idris2 ABI + Zig FFI seam under src/interface/
 build *args:
-    @echo "Building cadastra (debug)..."
-    # TODO: Replace with your build command
-    # Examples:
-    #   cargo build {{args}}                    # Rust
-    #   mix compile {{args}}                    # Elixir
-    #   zig build {{args}}                      # Zig
-    #   deno task build {{args}}                # Deno/ReScript
+    @echo "Building cadastra ABI/FFI seam (debug)..."
+    cd src/interface/ffi && zig build {{args}}
+    @command -v idris2 >/dev/null 2>&1 && idris2 --build abi.ipkg || echo "idris2 not found — skipping ABI typecheck"
     @echo "Build complete"
 
 # Build in release mode with optimizations
 build-release *args:
-    @echo "Building cadastra (release)..."
-    # TODO: Replace with your release build command
-    # Examples:
-    #   cargo build --release {{args}}
-    #   MIX_ENV=prod mix compile {{args}}
-    #   zig build -Doptimize=ReleaseFast {{args}}
+    @echo "Building cadastra ABI/FFI seam (release)..."
+    cd src/interface/ffi && zig build -Doptimize=ReleaseFast {{args}}
     @echo "Release build complete"
 
-# Build and watch for changes (requires entr or similar)
+# Build and watch for changes (requires entr)
 build-watch:
     @echo "Watching for changes..."
-    # TODO: Customize file patterns for your language
-    # Examples:
-    #   find src -name '*.rs' | entr -c just build
-    #   mix compile --force --warnings-as-errors
-    #   deno task dev
+    @command -v entr >/dev/null 2>&1 && find src/interface/ffi -name '*.zig' | entr -c just build || echo "entr not found — install entr for watch mode"
 
 # Clean build artifacts [reversible: rebuild with `just build`]
 clean:
     @echo "Cleaning..."
-    # TODO: Customize for your build system
     rm -rf target/ _build/ build/ dist/ out/ obj/ bin/
+    rm -rf src/interface/ffi/.zig-cache src/interface/ffi/zig-out
 
 # Deep clean including caches [reversible: rebuild]
 clean-all: clean
@@ -129,79 +117,57 @@ clean-all: clean
 # TEST & QUALITY
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Run all tests
+# Run all tests: Zig unit + integration tests for the ABI/FFI seam
 test *args:
     @echo "Running tests..."
-    # TODO: Replace with your test command
-    # Examples:
-    #   cargo test {{args}}
-    #   mix test {{args}}
-    #   zig build test {{args}}
-    #   deno test {{args}}
+    cd src/interface/ffi && zig build test {{args}}
     @echo "Tests passed!"
 
 # Run tests with verbose output
 test-verbose:
     @echo "Running tests (verbose)..."
-    # TODO: Replace with verbose test command
+    cd src/interface/ffi && zig build test --summary all
 
-# Smoke test
+# Smoke test: fast sanity check that the seam builds and typechecks
 test-smoke:
     @echo "Smoke test..."
-    # TODO: Add basic sanity checks
+    cd src/interface/ffi && zig build
+    @command -v idris2 >/dev/null 2>&1 && idris2 --typecheck abi.ipkg || echo "idris2 not found — skipping ABI typecheck"
+    @echo "Smoke test passed!"
 
 # Run end-to-end tests (full pipeline: build → run → verify)
 e2e:
-    @echo "Running E2E tests..."
-    # TODO: Replace with your E2E test command. Examples:
-    #   bash tests/e2e.sh                    # Shell-based E2E
-    #   npx playwright test                  # Browser E2E
-    #   mix test test/integration/e2e_test.exs  # Elixir E2E
-    #   cargo test --test end_to_end         # Rust E2E
-    @echo "E2E tests passed!"
+    bash tests/e2e.sh
 
-# Run aspect tests (cross-cutting concern validation)
+# Run aspect tests (cross-cutting concern validation: SPDX, dangerous patterns)
 aspect:
-    @echo "Running aspect tests..."
-    # TODO: Replace with your aspect test command. Examples:
-    #   bash tests/aspect_tests.sh           # Shell-based aspect tests
-    #   cargo test --test aspects             # Rust aspect tests
-    # Aspect tests validate architectural invariants:
-    #   - Thread safety (mutex in FFI modules)
-    #   - ABI/FFI contract (declarations match exports)
-    #   - SPDX compliance (all files have license headers)
-    #   - No dangerous patterns (believe_me, assert_total, etc.)
-    @echo "Aspect tests passed!"
+    bash tests/aspect_tests.sh
 
 # Run benchmarks (performance regression detection)
 bench:
-    @echo "Running benchmarks..."
-    # TODO: Replace with your benchmark command. Examples:
-    #   cargo bench                           # Rust criterion
-    #   zig build bench                       # Zig benchmarks
-    #   mix run bench/benchmarks.exs          # Elixir benchee
-    #   deno bench                            # Deno bench
-    @echo "Benchmarks complete!"
+    bash benches/template_bench.sh "$(pwd)"
 
-# Run readiness tests (Component Readiness Grade: D/C/B)
+# Check the current Component Readiness Grade (reads docs/status/READINESS.adoc)
 readiness:
-    @echo "Running readiness tests..."
-    # TODO: Replace with your readiness test command. Examples:
-    #   cargo test --test readiness -- --nocapture
-    @echo "Readiness tests complete!"
+    @grade=$(just crg-grade); \
+    if [ "$grade" = "X" ]; then \
+        echo "No CRG grade recorded in docs/status/READINESS.adoc"; \
+    else \
+        echo "Current CRG grade: $grade"; \
+    fi
 
-# Print the current CRG grade (reads from READINESS.md '**Current Grade:** X' line)
+# Print the current CRG grade (reads from docs/status/READINESS.adoc '**Current Grade:** X' line)
 crg-grade:
-    @grade=$$(grep -oP '(?<=\*\*Current Grade:\*\* )[A-FX]' READINESS.md 2>/dev/null | head -1); \
-    [ -z "$$grade" ] && grade="X"; \
-    echo "$$grade"
+    @grade=$(grep -oP '(?<=\*Current Grade:\* )[A-FX]' docs/status/READINESS.adoc 2>/dev/null | head -1); \
+    [ -z "$grade" ] && grade="X"; \
+    echo "$grade"
 
 # Print a shields.io CRG badge for embedding in README files
-# Looks for '**Current Grade:** X' in READINESS.md; falls back to X
+# Looks for '**Current Grade:** X' in docs/status/READINESS.adoc; falls back to X
 crg-badge:
-    @grade=$$(grep -oP '(?<=\*\*Current Grade:\*\* )[A-FX]' READINESS.md 2>/dev/null | head -1); \
-    [ -z "$$grade" ] && grade="X"; \
-    case "$$grade" in \
+    @grade=$(grep -oP '(?<=\*Current Grade:\* )[A-FX]' docs/status/READINESS.adoc 2>/dev/null | head -1); \
+    [ -z "$grade" ] && grade="X"; \
+    case "$grade" in \
       A) color="brightgreen" ;; \
       B) color="green" ;; \
       C) color="yellow" ;; \
@@ -210,7 +176,7 @@ crg-badge:
       F) color="critical" ;; \
       *) color="lightgrey" ;; \
     esac; \
-    echo "[![CRG $$grade](https://img.shields.io/badge/CRG-$$grade-$$color?style=flat-square)](https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades)"
+    echo "[![CRG $grade](https://img.shields.io/badge/CRG-$grade-$color?style=flat-square)](https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades)"
 
 # Run the full merge-requirement test suite (ALL categories)
 # Per STANDING rule: P2P + E2E + aspect + execution + lifecycle + bench
@@ -232,63 +198,43 @@ fix: fmt
 # Format all source files [reversible: git checkout]
 fmt:
     @echo "Formatting source files..."
-    # TODO: Replace with your formatter
-    # Examples:
-    #   cargo fmt
-    #   mix format
-    #   gleam format
-    #   deno fmt
+    zig fmt src/interface/ffi/
 
 # Check formatting without changes
 fmt-check:
     @echo "Checking formatting..."
-    # TODO: Replace with your format check
-    # Examples:
-    #   cargo fmt --check
-    #   mix format --check-formatted
-    #   gleam format --check
+    zig fmt --check src/interface/ffi/
 
-# Run linter
+# Run linter (shellcheck over the toolkit + estate scripts)
 lint:
-    @echo "Linting source files..."
-    # TODO: Replace with your linter
-    # Examples:
-    #   cargo clippy -- -D warnings
-    #   mix credo --strict
-    #   gleam check
+    #!/usr/bin/env bash
+    echo "Linting shell scripts..."
+    if command -v shellcheck >/dev/null 2>&1; then
+        find . -name "*.sh" -not -path "./.git/*" -print0 | xargs -0 shellcheck
+    else
+        echo "shellcheck not found — install for full linting"
+    fi
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # RUN & EXECUTE
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Run the application
-run *args: build
-    # TODO: Replace with your run command
-    echo "Run not configured yet"
-
-# Run with verbose output
-run-verbose *args: build
-    # TODO: Replace with verbose run command
-    echo "Run not configured yet"
-
-# Install to user path
-install: build-release
-    @echo "Installing cadastra..."
-    # TODO: Replace with your install command
+# Run the estate scan (the repo's actual payload — writes estate-triage-report.csv)
+run *args:
+    ./tools/estate-migration-toolkit/scripts/estate-scan.sh {{args}}
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # DEPENDENCIES
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Install/check all dependencies
+# Check all runtime dependencies (see docs/onboarding/QUICKSTART-MAINTAINER.adoc)
 deps:
     @echo "Checking dependencies..."
-    # TODO: Replace with your dependency check
-    # Examples:
-    #   cargo check
-    #   mix deps.get
-    #   gleam deps download
-    @echo "All dependencies satisfied"
+    @for cmd in bash git gh jq zig; do \
+        command -v "$cmd" >/dev/null 2>&1 && echo "  [OK] $cmd" || echo "  [MISSING] $cmd"; \
+    done
+    @command -v idris2 >/dev/null 2>&1 && echo "  [OK] idris2 (optional)" || echo "  [optional, not found] idris2"
+    @command -v bun >/dev/null 2>&1 && echo "  [OK] bun (optional, deno migration only)" || echo "  [optional, not found] bun"
 
 # Audit dependencies for vulnerabilities
 deps-audit:
@@ -555,7 +501,7 @@ assail:
 
 # Self-diagnostic — checks dependencies, permissions, paths
 doctor:
-    @echo "Running diagnostics for rsr-template-repo..."
+    @echo "Running diagnostics for cadastra..."
     @echo "Checking required tools..."
     @command -v just >/dev/null 2>&1 && echo "  [OK] just" || echo "  [FAIL] just not found"
     @command -v git >/dev/null 2>&1 && echo "  [OK] git" || echo "  [FAIL] git not found"
@@ -565,7 +511,7 @@ doctor:
 
 # Guided tour of key features
 tour:
-    @echo "=== rsr-template-repo Tour ==="
+    @echo "=== cadastra Tour ==="
     @echo ""
     @echo "1. Project structure:"
     @ls -la
@@ -580,12 +526,12 @@ tour:
 
 # Open feedback channel with diagnostic context
 help-me:
-    @echo "=== rsr-template-repo Help ==="
+    @echo "=== cadastra Help ==="
     @echo "Platform: $(uname -s) $(uname -m)"
     @echo "Shell: $SHELL"
     @echo ""
     @echo "To report an issue:"
-    @echo "  https://github.com/hyperpolymath/rsr-template-repo/issues/new"
+    @echo "  https://github.com/metadatastician/cadastra/issues/new"
     @echo ""
     @echo "Include the output of 'just doctor' in your report."
 

@@ -38,12 +38,12 @@ pub const Result = enum(c_int) {
     null_pointer = 4,
 };
 
-/// Library handle (opaque to prevent direct access)
-pub const Handle = opaque {
-    // Internal state hidden from C
+/// Library handle. Exposed to C only as an opaque pointer (`?*Handle`); the
+/// struct fields below are internal Zig-side state and are never dereferenced
+/// across the FFI boundary.
+pub const Handle = struct {
     allocator: std.mem.Allocator,
     initialized: bool,
-    // Add your fields here
 };
 
 //==============================================================================
@@ -52,7 +52,7 @@ pub const Handle = opaque {
 
 /// Initialize the library
 /// Returns a handle, or null on failure
-export fn cadastra_init() ?*Handle {
+pub export fn cadastra_init() ?*Handle {
     const allocator = std.heap.c_allocator;
 
     const handle = allocator.create(Handle) catch {
@@ -71,7 +71,7 @@ export fn cadastra_init() ?*Handle {
 }
 
 /// Free the library handle
-export fn cadastra_free(handle: ?*Handle) void {
+pub export fn cadastra_free(handle: ?*Handle) void {
     const h = handle orelse return;
     const allocator = h.allocator;
 
@@ -87,7 +87,7 @@ export fn cadastra_free(handle: ?*Handle) void {
 //==============================================================================
 
 /// Process data (example operation)
-export fn cadastra_process(handle: ?*Handle, input: u32) Result {
+pub export fn cadastra_process(handle: ?*Handle, input: u32) Result {
     const h = handle orelse {
         setError("Null handle");
         return .null_pointer;
@@ -111,7 +111,7 @@ export fn cadastra_process(handle: ?*Handle, input: u32) Result {
 
 /// Get a string result (example)
 /// Caller must free the returned string
-export fn cadastra_get_string(handle: ?*Handle) ?[*:0]const u8 {
+pub export fn cadastra_get_string(handle: ?*Handle) ?[*:0]const u8 {
     const h = handle orelse {
         setError("Null handle");
         return null;
@@ -133,7 +133,7 @@ export fn cadastra_get_string(handle: ?*Handle) ?[*:0]const u8 {
 }
 
 /// Free a string allocated by the library
-export fn cadastra_free_string(str: ?[*:0]const u8) void {
+pub export fn cadastra_free_string(str: ?[*:0]const u8) void {
     const s = str orelse return;
     const allocator = std.heap.c_allocator;
 
@@ -146,7 +146,7 @@ export fn cadastra_free_string(str: ?[*:0]const u8) void {
 //==============================================================================
 
 /// Process an array of data
-export fn cadastra_process_array(
+pub export fn cadastra_process_array(
     handle: ?*Handle,
     buffer: ?[*]const u8,
     len: u32,
@@ -182,7 +182,7 @@ export fn cadastra_process_array(
 
 /// Get the last error message
 /// Returns null if no error
-export fn cadastra_last_error() ?[*:0]const u8 {
+pub export fn cadastra_last_error() ?[*:0]const u8 {
     const err = last_error orelse return null;
 
     // Return C string (static storage, no need to free)
@@ -196,12 +196,12 @@ export fn cadastra_last_error() ?[*:0]const u8 {
 //==============================================================================
 
 /// Get the library version
-export fn cadastra_version() [*:0]const u8 {
+pub export fn cadastra_version() [*:0]const u8 {
     return VERSION.ptr;
 }
 
 /// Get build information
-export fn cadastra_build_info() [*:0]const u8 {
+pub export fn cadastra_build_info() [*:0]const u8 {
     return BUILD_INFO.ptr;
 }
 
@@ -210,10 +210,10 @@ export fn cadastra_build_info() [*:0]const u8 {
 //==============================================================================
 
 /// Callback function type (C ABI)
-pub const Callback = *const fn (u64, u32) callconv(.C) u32;
+pub const Callback = *const fn (u64, u32) callconv(.c) u32;
 
 /// Register a callback
-export fn cadastra_register_callback(
+pub export fn cadastra_register_callback(
     handle: ?*Handle,
     callback: ?Callback,
 ) Result {
@@ -244,7 +244,7 @@ export fn cadastra_register_callback(
 //==============================================================================
 
 /// Check if handle is initialized
-export fn cadastra_is_initialized(handle: ?*Handle) u32 {
+pub export fn cadastra_is_initialized(handle: ?*Handle) u32 {
     const h = handle orelse return 0;
     return if (h.initialized) 1 else 0;
 }
