@@ -43,7 +43,6 @@ issues = [
   "UPSTREAM (rsr-template-repo), reported not patched: `just init` never touches CLADE.a2ml/ECOSYSTEM.a2ml/STATE.a2ml, so every new repo inherits the template's identity, ecosystem and maturity. Corrected by hand here. paint-type and scaffoldia still carry the inherited uuid.",
   "UPSTREAM (gv-clade-index), reported not patched: sync/deploy-clade-a2ml.sh hardcodes the owner path to `hyperpolymath`, so it would recompute a wrong uuid for any metadatastician-owned repo, including this one.",
   "This repo is NOT registered in gv-clade-index. Registration is outward-facing and is the owner's act (doctrine 11).",
-  "RESOLVED 2026-07-27: `just init` left tokens it has no answers for ({{PACKAGE_NAME}}, {{PGP_KEY_URL}}, {{TEST_CMD}}, {{LANG_STACK}}, {{BUILD_CMD}}, {{DEPS}}, {{DESCRIPTION}}) unfilled across README.adoc, SECURITY.md (root + .github), .well-known/security.txt, and docs/onboarding/QUICKSTART-*.adoc. Filled by hand (fix/instantiate-template branch); UPSTREAM (rsr-template-repo) still needs these added to `just init`'s SED_ARGS so future instantiations don't repeat this.",
 ]
 
 [critical-next-actions]
