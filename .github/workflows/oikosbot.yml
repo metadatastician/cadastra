@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
+name: OikosBot Sustainability Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  actions: read
+  security-events: write
+  contents: read
+
+jobs:
+  oikosbot:
+    name: Sustainability Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # OikosBot's own composite action runs the published CLI container.
+      # It replaces a hand-rolled job that could never work: the image tag it
+      # pinned has never existed on the package, so the job died at container
+      # pull, and the failure was masked. Config comes from .oikos.yml.
+      - name: Run OikosBot analysis
+        uses: hyperpolymath/oikosbot@v0.1.0
+        with:
+          mode: report
+          path: .
+          output: results.sarif
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4.37.4
+        with:
+          sarif_file: results.sarif
+          category: oikosbot

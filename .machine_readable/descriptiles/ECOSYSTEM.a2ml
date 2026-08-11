@@ -3,7 +3,7 @@
 #
 # REWRITTEN FOR THIS REPO 2026-07-16. The template ships this file describing
 # rsr-template-repo's OWN position, with a "NOTE FOR CONSUMERS" saying to replace
-# it. `just init` does not do that (it substitutes {{PLACEHOLDER}} tokens only, and
+# it. `just init` does not do that (it substitutes placeholder tokens only, and
 # this file has none), so an uncorrected instantiation silently claims to BE the
 # template. Same class of bug as the inherited CLADE identity — see CLADE.a2ml.
 

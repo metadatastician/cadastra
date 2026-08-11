@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
 #
 # OPTIONAL: BoJ Server Build Trigger
 # This workflow notifies a BoJ Server instance when code is pushed.
@@ -15,6 +16,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 permissions:
+  actions: read
   contents: read
 jobs:
   trigger-boj:
@@ -23,7 +25,7 @@ jobs:
     if: ${{ vars.BOJ_SERVER_URL != '' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@v7.0.1
       - name: Trigger BoJ Server (Casket/ssg-mcp)
         env:
           BOJ_URL: ${{ secrets.BOJ_SERVER_URL || vars.BOJ_SERVER_URL }}

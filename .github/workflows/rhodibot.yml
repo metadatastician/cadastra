@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
 # rhodibot.yml — RSR compliance CANARY (report-only)
 #
 # Rhodibot does NOT mutate this repository. It never deletes, renames,
@@ -26,6 +27,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
 jobs:
   canary:
@@ -33,7 +35,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 1
       - name: Rhodibot — detect drift (no mutations)

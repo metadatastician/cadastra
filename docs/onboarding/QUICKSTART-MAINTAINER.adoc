@@ -1,30 +1,39 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-// Template: QUICKSTART-MAINTAINER.adoc — packaging, deploying, and maintaining
-// Replace rsr-template-repo, {{PACKAGE_NAME}}, {{DEPS}} with actuals
-= rsr-template-repo — Quick Start for Platform Maintainers
+= Cadastra — Quick Start for Platform Maintainers
 :toc:
 :toclevels: 2
 
 == Overview
 
-This guide covers packaging, deploying, and maintaining rsr-template-repo for
-distribution on your platform.
+Cadastra is not distributed as a packaged binary — it is a script toolkit
+(`tools/estate-migration-toolkit/`) run in place from a checkout, plus an
+RSR scaffold example ABI/FFI seam. This guide covers running it, not
+packaging it for a platform.
 
 == Runtime Dependencies
 
-{{DEPS}}
+* `bash`, `git` — required by every script in the toolkit
+* `gh` (GitHub CLI, authenticated via `gh auth login`) — required by
+  `estate-scan.sh`, `rollout-language-gate.sh`, `deprecate-poly-mcps.sh`
+* `jq` — required by `estate-scan.sh` and the CI language-gate
+* `bun` — required only by `migrate-deno-to-bun.sh`
+* `zig` 0.16+ and `idris2` — required only to build/test the ABI/FFI seam
+  under `src/interface/`
 
 == Build from Source
 
 [source,bash]
 ----
-git clone https://github.com/hyperpolymath/rsr-template-repo.git
-cd rsr-template-repo
+git clone https://github.com/metadatastician/cadastra.git
+cd cadastra
 just build-release
 ----
 
-Output: `{{BUILD_OUTPUT_PATH}}`
+Output: N/A — this repo does not currently produce a distributable binary
+or package artefact. `just build-release` builds the ABI/FFI seam under
+`src/interface/ffi/` in release mode; the toolkit scripts run directly from
+`tools/estate-migration-toolkit/scripts/`.
 
 == Packaging
 
@@ -40,51 +49,21 @@ guix build -f guix.scm
 [source,bash]
 ----
 just stapeln-export    # Generates Containerfile
-podman build -t rsr-template-repo .
+podman build -t cadastra .
 ----
-
-=== Manual Package
-
-[source,bash]
-----
-just install --prefix=/usr/local
-----
-
-Files installed:
-
-[cols="1,2"]
-|===
-| Path | Contents
-
-| `$PREFIX/bin/`
-| Executables
-
-| `$PREFIX/share/{{PACKAGE_NAME}}/`
-| Data files, assets
-
-| `$PREFIX/share/doc/{{PACKAGE_NAME}}/`
-| Documentation
-
-| `$PREFIX/share/applications/`
-| .desktop file (Linux, if GUI)
-
-| `$PREFIX/share/man/man1/`
-| Man pages
-|===
 
 == Configuration
 
-Default config location: `$XDG_CONFIG_HOME/{{PACKAGE_NAME}}/config.toml`
-
-Fallback: `$HOME/.config/{{PACKAGE_NAME}}/config.toml`
+The scan toolkit takes its configuration on the command line
+(`--github <orgs>`, `--local <paths>`) — see
+`tools/estate-migration-toolkit/README.md`. There is no persistent config
+file.
 
 == Health Checks
 
 [source,bash]
 ----
-just doctor            # Full diagnostic
-just run --version   # Version check
-just run --selftest  # Built-in self-test
+just doctor             # Full diagnostic
 ----
 
 == Updating
@@ -93,31 +72,16 @@ just run --selftest  # Built-in self-test
 ----
 git pull
 just build-release
-just install --prefix=/usr/local
 ----
-
-Or via OPSM: `opsm update {{PACKAGE_NAME}}`
 
 == Security Notes
 
 * License: MPL-2.0 (code) / CC-BY-SA-4.0 (docs)
-* All dependencies SHA-pinned
-* `panic-attacker` scan results: link:INSTALL-SECURITY-REPORT.adoc[]
+* All GitHub Actions dependencies SHA-pinned
+* `panic-attacker` scan results: `just assail`
 * OpenSSF Scorecard: see badge in README
-
-== Multi-Instance Deployment
-
-For deploying multiple instances (e.g., different users or tenants):
-
-[source,bash]
-----
-just install --prefix=/opt/{{PACKAGE_NAME}}-instance1 --config=/etc/{{PACKAGE_NAME}}/instance1.toml
-just install --prefix=/opt/{{PACKAGE_NAME}}-instance2 --config=/etc/{{PACKAGE_NAME}}/instance2.toml
-----
-
-Each instance has isolated config, data, and logs.
 
 == Reporting Issues
 
-* Upstream: https://github.com/hyperpolymath/rsr-template-repo/issues
+* Upstream: https://github.com/metadatastician/cadastra/issues
 * With diagnostic: `just help-me` (pre-fills context)

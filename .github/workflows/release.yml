@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
 # Release workflow — triggered by version tags (v*).
@@ -13,6 +14,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 permissions:
+  actions: read
   contents: read
 jobs:
   build:
@@ -22,7 +24,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@v7.0.1
       - name: Detect project type and build
         id: build
         run: |
@@ -71,7 +73,8 @@ jobs:
         # TODO: Upload build artifacts if needed (pin actions/upload-artifact
         #   to a full commit SHA when enabling, per the SHA-pin policy):
         # - uses: actions/upload-artifact@<full-commit-sha>  # vX.Y.Z
-        #   with:
+        #
+        # with:
         #     name: release-artifacts
         #     path: target/release/
   changelog:
@@ -84,7 +87,7 @@ jobs:
       changelog: ${{ steps.cliff.outputs.content }}
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
       - name: Extract version from tag
@@ -109,7 +112,7 @@ jobs:
         run: |
           git cliff --output CHANGELOG.md
       - name: Upload updated CHANGELOG.md
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: changelog
           path: CHANGELOG.md
@@ -124,15 +127,16 @@ jobs:
       id-token: write       # mint the OIDC token attestation provenance is signed with
       attestations: write   # write the build-provenance attestation (the "claim")
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@v7.0.1
       # TODO: Download build artifacts if uploading to the release (pin
       #   actions/download-artifact to a full commit SHA when enabling):
       # - uses: actions/download-artifact@<full-commit-sha>  # vX.Y.Z
-      #   with:
+      #
+      # with:
       #     name: release-artifacts
       #     path: artifacts/
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
+        uses: softprops/action-gh-release@v3.0.2
         with:
           body: ${{ needs.changelog.outputs.changelog }}
           draft: false
@@ -153,6 +157,6 @@ jobs:
       #   (must match the `files:` uploaded above, e.g. artifacts/*).
       - name: Attest build provenance
         if: ${{ hashFiles('artifacts/*') != '' }}   # skip until real artifacts are wired
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        uses: actions/attest-build-provenance@v4.1.1
         with:
           subject-path: 'artifacts/*'
