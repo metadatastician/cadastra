@@ -7,7 +7,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.37.6'
+        - 'github/codeql-action@v4.37.7'
     '.github/workflows/container-build.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/dependabot-automerge.yml':
@@ -29,7 +29,7 @@ workflows:
     '.github/workflows/mirror.yml': []
     '.github/workflows/oikosbot.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.37.6'
+        - 'github/codeql-action@v4.37.7'
         - 'hyperpolymath/oikosbot@v0.1.1'
     '.github/workflows/openssf-compliance.yml':
         - 'actions/checkout@v7.0.1'
@@ -128,7 +128,7 @@ dependencies:
             - 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
     'dawidd6/action-send-mail@v3.12.0':
         ref: 'v3.12.0'
-        commit: 'sha1-12335b969ae3fb71bee5f2c6b829744261aec34c'
+        commit: 'sha1-94de994a9f6fffee200243214e17002e2920bb59'
         owner_id: 9713907
         repo_id: 222439721
     'dependabot/fetch-metadata@v3.1.0':
@@ -146,9 +146,9 @@ dependencies:
         commit: 'sha1-54075bcc5e249e4758d363f27d099f55d843f124'
         owner_id: 47606891
         repo_id: 331103973
-    'github/codeql-action@v4.37.6':
-        ref: 'v4.37.6'
-        commit: 'sha1-5595ccaf912efad79be6eef63a5619ff05969be3'
+    'github/codeql-action@v4.37.7':
+        ref: 'v4.37.7'
+        commit: 'sha1-ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd'
         owner_id: 9919
         repo_id: 259445878
     'haskell-actions/setup@v2.12.0':
