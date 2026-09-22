@@ -154,7 +154,8 @@ FNR == 1 { wf = FILENAME }
     raw = m[1]
     gsub(/^["']|["']$/, "", raw)
     gsub(/[[:space:]]+$/, "", raw)
-    if (raw ~ /^\$\//) { dollar[wf] = dollar[wf] " " raw; next }   # known corruption
+    if (raw ~ /^\$\/[^@[:space:]][^@]*$/) next                     # valid same-repository reference
+    if (raw ~ /^\$\//) { dollar[wf] = dollar[wf] " " raw; next }   # malformed $/ reference
     n = norm(raw)
     if (n != "") { uses[wf, ck(n)] = 1; useslist[wf] = useslist[wf] " " n }
   }
