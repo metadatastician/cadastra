@@ -252,7 +252,7 @@ EOF
     expect_status 0 && expect_output "0 dangling edges"
 }
 
-test_rejects_dollar_local_action_rewrite() {
+test_accepts_valid_dollar_same_repository_reference() {
     cat > "$FIXTURE/build.yml" <<'EOF'
 name: Build
 on: push
@@ -269,8 +269,30 @@ dependencies:
 EOF
 
     run_checker
+    expect_status 0 && expect_output "actions.lock is in sync and transitively closed"
+}
+
+test_rejects_malformed_dollar_same_repository_references() {
+    cat > "$FIXTURE/build.yml" <<'EOF'
+name: Build
+on: push
+jobs:
+  build:
+    steps:
+      - uses: $/
+      - uses: $/local action
+      - uses: $/local-action@v1
+EOF
+    cat > "$FIXTURE/actions.lock" <<'EOF'
+version: 1
+workflows:
+    '.github/workflows/build.yml': []
+dependencies:
+EOF
+
+    run_checker
     expect_status 1 \
-        && expect_output "invalid local-action rewrite (uses: \$/...): \$/local-action"
+        && expect_output "invalid local-action rewrite (uses: \$/...): \$/ \$/local action \$/local-action@v1"
 }
 
 test_fails_without_lockfile() {
@@ -404,7 +426,8 @@ run_test "detects lock entries for deleted workflows" test_detects_lock_entry_fo
 run_test "detects direct dangling dependencies" test_detects_direct_dangling_dependency
 run_test "detects nested dangling dependencies" test_detects_nested_dangling_dependency
 run_test "accepts transitively closed dependency graphs" test_accepts_transitively_closed_dependencies
-run_test "rejects corrupted dollar-prefixed local actions" test_rejects_dollar_local_action_rewrite
+run_test "accepts valid dollar-prefixed same-repository actions" test_accepts_valid_dollar_same_repository_reference
+run_test "rejects malformed dollar-prefixed same-repository actions" test_rejects_malformed_dollar_same_repository_references
 run_test "fails closed when the lockfile is absent" test_fails_without_lockfile
 run_test "fails closed when workflows are absent" test_fails_without_workflows
 run_test "fails closed when GNU awk is unavailable" test_fails_without_gnu_awk
