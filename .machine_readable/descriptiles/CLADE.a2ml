@@ -10,9 +10,9 @@
 # So it is a fact anyone can recompute and check, not a choice. The value below was
 # derived that way, and the method was verified first by reproducing the registry's
 # own worked examples byte-for-byte before it was trusted:
-#     januskey          -> e216170e-ff47-5a5c-bbdd-15e61c8190c8
-#     gv-clade-index    -> c88e9ff3-9aac-5de8-b891-19b5de64aedd
-#     rsr-template-repo -> a5ea1382-a34c-5334-8a46-a2ebe904c810
+#     e216170e-ff47-5a5c-bbdd-15e61c8190c8 <- januskey
+#     c88e9ff3-9aac-5de8-b891-19b5de64aedd <- gv-clade-index
+#     a5ea1382-a34c-5334-8a46-a2ebe904c810 <- rsr-template-repo
 # Recompute this file's value with:
 #     uuidgen --sha1 --namespace @url --name "github.com/metadatastician/cadastra"
 #
