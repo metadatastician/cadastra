@@ -24,3 +24,12 @@
 # and third_party/ carve-outs. Scaffolded repos inherit this file, so the
 # exemption travels with the template.
 structural_drift/SD022:docs-template/
+
+# ─── dependabot-automerge.yml uses an unprivileged PR trigger ─────────
+#
+# RE008 assumes every `github.actor == '*[bot]'` check guards a privileged
+# `pull_request_target` workflow. This workflow uses `pull_request` and also
+# checks `github.event.pull_request.user.login`, so neither its token nor its
+# merge path can be reached by spoofing a fork-triggered actor. Keep the
+# deliberate two-part identity gate and suppress only RE008 for this file.
+research_extensions/RE008:.github/workflows/dependabot-automerge.yml
