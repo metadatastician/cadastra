@@ -90,7 +90,8 @@ echo ""
 
 REQUIRED_WORKFLOWS=(
     "hypatia-scan.yml"
-    "codeql.yml"
+    # codeql.yml retired 2026-09-29 (issue #52): advanced-config SARIF cannot
+    # coexist with the repository's enabled CodeQL default setup.
     "scorecard.yml"
     "quality.yml"
     "mirror.yml"

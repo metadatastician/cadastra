@@ -47,9 +47,3 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 3
-
-  # Nix flakes
-  - package-ecosystem: "nix"
-    directory: "/"
-    schedule:
-      interval: "weekly"

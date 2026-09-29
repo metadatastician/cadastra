@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+= Check exemptions
+:toc:
+:toclevels: 2
+
+Record of CI checks that remain red by *documented exemption* — reason and
+review date recorded, per the acceptance criteria of issue #52. An exemption
+never mutes the check: no `continue-on-error`, no warning demotion, no
+removal from any required-check set. The check keeps running and keeps
+failing until the credential or infrastructure it needs is provisioned, or
+the review date passes and the exemption is re-decided explicitly.
+
+[cols="2,1,4,2",options="header"]
+|===
+| Check | Status | Reason | Review by
+
+| `SonarQube`
+  | EXEMPT
+  | The self-hosted SonarQube Quality Gate job (`sonarqube / SonarQube Scan`)
+    exits 3 with `No SONAR_TOKEN provided`: this repository has no
+    `SONAR_TOKEN` secret provisioned (checked 2026-09-29 — the token the
+    estate `sonarqube.org/estate-core` gate expects is not present, and it
+    cannot be provisioned from inside a PR). Analysis itself is unaffected:
+    the SonarCloud path (`SonarCloud Code Analysis`) runs green on every
+    pull request. Determination recorded under issue #52.
+  | 2026-10-13
+|===
+
+== Review procedure
+
+On or before the review date, re-check whether `SONAR_TOKEN` can be
+provisioned for this repository (estate owner action), then either:
+
+* *lift* the exemption — provision the secret and confirm the Quality Gate
+  job goes green on a default-branch run; or
+* *re-record* the exemption with a new review date and an updated reason
+  (the reason must still hold; silence does not).
+
+Any change to this file must state the new review date explicitly — an
+exemption with a past review date and no re-decision is a lapsed exemption
+and the check is treated as unmuted red.
