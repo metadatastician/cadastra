@@ -24,9 +24,10 @@ concurrency:
 permissions:
   actions: read
   contents: read
-  security-events: read
+  # Single security-events grant: GitHub rejects duplicate keys outright
+  # (jobs=0, no check run). The reusable needs `write` to publish SARIF.
   security-events: write
 
 jobs:
   scan:
-    uses: hyperpolymath/standards/.github/workflows/hypatia-scan-reusable.yml@cc58c0cb23f73fc2019ce85a56a468e5248a93b3
+    uses: hyperpolymath/standards/.github/workflows/hypatia-scan-reusable.yml@e3b9929cdc57149874e2211e6c8934145d245855

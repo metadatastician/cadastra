@@ -5,9 +5,6 @@ version: 'v0.0.2'
 workflows:
     '.github/workflows/boj-build.yml':
         - 'actions/checkout@v7.0.1'
-    '.github/workflows/codeql.yml':
-        - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.38.0'
     '.github/workflows/container-build.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/dependabot-automerge.yml':
@@ -20,11 +17,11 @@ workflows:
     '.github/workflows/estate-rules.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/governance.yml':
-        - 'hyperpolymath/standards@bd0df9ead7faf0cdfe0e13e7966d91e28d0101d4'
+        - 'hyperpolymath/standards@e3b9929cdc57149874e2211e6c8934145d245855'
     '.github/workflows/guix-policy.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/hypatia-scan.yml':
-        - 'hyperpolymath/standards@bd0df9ead7faf0cdfe0e13e7966d91e28d0101d4'
+        - 'hyperpolymath/standards@e3b9929cdc57149874e2211e6c8934145d245855'
     '.github/workflows/instant-sync.yml':
         - 'peter-evans/repository-dispatch@v4.0.1'
     '.github/workflows/label-triage.yml': []
@@ -34,7 +31,7 @@ workflows:
         - 'hyperpolymath/standards@bd0df9ead7faf0cdfe0e13e7966d91e28d0101d4'
     '.github/workflows/oikosbot.yml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.38.0'
+        - 'github/codeql-action@v4.38.1'
         - 'hyperpolymath/oikosbot@v0.1.3'
     '.github/workflows/openssf-compliance.yml':
         - 'actions/checkout@v7.0.1'
@@ -60,14 +57,14 @@ workflows:
     '.github/workflows/runtime-policy.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/scorecard.yml':
-        - 'hyperpolymath/standards@bd0df9ead7faf0cdfe0e13e7966d91e28d0101d4'
+        - 'hyperpolymath/standards@e3b9929cdc57149874e2211e6c8934145d245855'
     '.github/workflows/secret-scanner.yml':
         - 'hyperpolymath/standards@bd0df9ead7faf0cdfe0e13e7966d91e28d0101d4'
     '.github/workflows/security-policy.yml':
         - 'actions/checkout@v7.0.1'
     '.github/workflows/sonarqube.yml':
         - 'actions/checkout@v7.0.1'
-        - 'sonarsource/sonarqube-scan-action@v8.2.1'
+        - 'sonarsource/sonarqube-scan-action@v8.2.2'
     '.github/workflows/static-analysis-gate.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/download-artifact@v8.0.1'
@@ -162,6 +159,11 @@ dependencies:
         commit: 'sha1-2c7215f132e9ebf062739d9130488b56d53c060c'
         owner_id: 1940490
         repo_id: 260749683
+    'editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393':
+        ref: '51f63319f592f97930c73d9c46184d20bd206393'
+        commit: 'sha1-51f63319f592f97930c73d9c46184d20bd206393'
+        owner_id: 26415196
+        repo_id: 297874902
     'editorconfig-checker/action-editorconfig-checker@840e866d93b8e032123c23bac69dece044d4d84c':
         ref: '840e866d93b8e032123c23bac69dece044d4d84c'
         commit: 'sha1-840e866d93b8e032123c23bac69dece044d4d84c'
@@ -182,14 +184,19 @@ dependencies:
         commit: 'sha1-54075bcc5e249e4758d363f27d099f55d843f124'
         owner_id: 47606891
         repo_id: 331103973
+    'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63':
+        ref: 'b96794f015dfd88f77b49b1c93e0fa7110f94c63'
+        commit: 'sha1-b96794f015dfd88f77b49b1c93e0fa7110f94c63'
+        owner_id: 9919
+        repo_id: 259445878
     'github/codeql-action@f205ea1c3313d32999d8d6a48b4f6530d4437b38':
         ref: 'f205ea1c3313d32999d8d6a48b4f6530d4437b38'
         commit: 'sha1-f205ea1c3313d32999d8d6a48b4f6530d4437b38'
         owner_id: 9919
         repo_id: 259445878
-    'github/codeql-action@v4.38.0':
-        ref: 'v4.38.0'
-        commit: 'sha1-b96794f015dfd88f77b49b1c93e0fa7110f94c63'
+    'github/codeql-action@v4.38.1':
+        ref: 'v4.38.1'
+        commit: 'sha1-1c5b675653bb5c22dbe9b12b556ec555138e09fd'
         owner_id: 9919
         repo_id: 259445878
     'haskell-actions/setup@v2.12.0':
@@ -228,6 +235,19 @@ dependencies:
             - 'github/codeql-action@f205ea1c3313d32999d8d6a48b4f6530d4437b38'
             - 'ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc'
             - 'webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555'
+    'hyperpolymath/standards@e3b9929cdc57149874e2211e6c8934145d245855':
+        ref: 'e3b9929cdc57149874e2211e6c8934145d245855'
+        commit: 'sha1-e3b9929cdc57149874e2211e6c8934145d245855'
+        owner_id: 6759885
+        repo_id: 1116521501
+        uses:
+            - 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
+            - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+            - 'actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a'
+            - 'editorconfig-checker/action-editorconfig-checker@51f63319f592f97930c73d9c46184d20bd206393'
+            - 'erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124'
+            - 'github/codeql-action@b96794f015dfd88f77b49b1c93e0fa7110f94c63'
+            - 'ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc'
     'ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc':
         ref: '2d1146689b8cda280b9bc96326124645441f03bc'
         commit: 'sha1-2d1146689b8cda280b9bc96326124645441f03bc'
@@ -243,9 +263,9 @@ dependencies:
         commit: 'sha1-efb35369e0ad2afab669f228072c1b0d510eae64'
         owner_id: 2242
         repo_id: 204253808
-    'sonarsource/sonarqube-scan-action@v8.2.1':
-        ref: 'v8.2.1'
-        commit: 'sha1-22918119ff8e1ca75a623e15c8296b6ea4fbe28f'
+    'sonarsource/sonarqube-scan-action@v8.2.2':
+        ref: 'v8.2.2'
+        commit: 'sha1-ba9859eae8dd6bd29e412f25ddbbef3d032000f4'
         owner_id: 545988
         repo_id: 366408409
     'webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555':

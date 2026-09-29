@@ -436,10 +436,6 @@ guix-shell:
 guix-build:
     guix build -f guix.scm
 
-# Enter Nix development shell (fallback)
-nix-shell:
-    @if [ -f "flake.nix" ]; then nix develop; else echo "No flake.nix"; fi
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # HYBRID AUTOMATION
 # ═══════════════════════════════════════════════════════════════════════════════
