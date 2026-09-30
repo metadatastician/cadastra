@@ -153,37 +153,36 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Elixir for Hypatia scanner
-        id: beam
-        continue-on-error: true
         uses: erlef/setup-beam@v1.24.1
         with:
           elixir-version: '1.19.4'
           otp-version: '28.3'
       - name: Clone and build Hypatia
-        id: build
-        continue-on-error: true
         run: |
-          git clone https://github.com/hyperpolymath/hypatia.git "$HOME/hypatia" 2>/dev/null || true
-          if [ -f "$HOME/hypatia/mix.exs" ]; then
-            cd "$HOME/hypatia"
-            # Build escript if neither hypatia nor hypatia-v2 exists
-            if [ ! -f hypatia ] && [ ! -f hypatia-v2 ]; then
-              mix deps.get
-              mix escript.build
-            fi
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::notice::Hypatia scanner not available — skipping scan"
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          fi
+          set -euo pipefail
+          git clone --depth 1 https://github.com/hyperpolymath/hypatia.git "$HOME/hypatia"
+          test -f "$HOME/hypatia/mix.exs" || {
+            echo "::error::Hypatia checkout is missing mix.exs; refusing to skip the scan"
+            exit 1
+          }
+          cd "$HOME/hypatia"
+          mix deps.get
+          mix escript.build
+          test -x hypatia || {
+            echo "::error::Hypatia build did not produce the scanner executable"
+            exit 1
+          }
       - name: Run Hypatia scan
         id: scan
-        if: steps.build.outputs.ready == 'true'
         run: |
-          set +e
-          HYPATIA_FORMAT=json "$HOME/hypatia/hypatia-cli.sh" scan . --exit-zero > hypatia-findings.json
-          HYP_EXIT=$?
-          set -e
+          set -euo pipefail
+          if HYPATIA_FORMAT=json "$HOME/hypatia/hypatia-cli.sh" scan . --exit-zero > hypatia-findings.json; then
+            :
+          else
+            HYP_EXIT=$?
+            echo "::error::Hypatia scanner execution failed with exit ${HYP_EXIT}"
+            exit "$HYP_EXIT"
+          fi
 
           # --exit-zero is Hypatia's own documented CI recipe (lib/hypatia/cli.ex),
           # for exactly this case: "use in CI when a downstream step gates on
@@ -194,10 +193,6 @@ jobs:
           # summary line into the JSON, so every parse fails, the old `[]`
           # fallback substituted a clean result, CRITICAL was always 0, and the
           # gate below could never fire on any input. Keep stderr on the log.
-          if [ "$HYP_EXIT" -ne 0 ]; then
-            echo "::error::Hypatia scanner execution failed with exit ${HYP_EXIT}"
-            exit "$HYP_EXIT"
-          fi
           # `jq empty` is NOT sufficient -- it succeeds on any valid JSON,
           # including a bare string, object or null. Assert the array.
           if [ ! -s hypatia-findings.json ] || ! jq -e 'type == "array"' hypatia-findings.json >/dev/null; then
@@ -205,11 +200,11 @@ jobs:
             exit 1
           fi
 
-          TOTAL=$(jq '. | length' hypatia-findings.json 2>/dev/null || echo 0)
-          CRITICAL=$(jq '[.[] | select(.severity == "critical")] | length' hypatia-findings.json 2>/dev/null || echo 0)
-          HIGH=$(jq '[.[] | select(.severity == "high")] | length' hypatia-findings.json 2>/dev/null || echo 0)
-          MEDIUM=$(jq '[.[] | select(.severity == "medium")] | length' hypatia-findings.json 2>/dev/null || echo 0)
-          LOW=$(jq '[.[] | select(.severity == "low")] | length' hypatia-findings.json 2>/dev/null || echo 0)
+          TOTAL=$(jq '. | length' hypatia-findings.json)
+          CRITICAL=$(jq '[.[] | select(.severity == "critical")] | length' hypatia-findings.json)
+          HIGH=$(jq '[.[] | select(.severity == "high")] | length' hypatia-findings.json)
+          MEDIUM=$(jq '[.[] | select(.severity == "medium")] | length' hypatia-findings.json)
+          LOW=$(jq '[.[] | select(.severity == "low")] | length' hypatia-findings.json)
 
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
           echo "critical=$CRITICAL" >> "$GITHUB_OUTPUT"
@@ -217,7 +212,6 @@ jobs:
           echo "medium=$MEDIUM" >> "$GITHUB_OUTPUT"
           echo "low=$LOW" >> "$GITHUB_OUTPUT"
       - name: Emit check annotations
-        if: steps.build.outputs.ready == 'true'
         run: |
           # Findings carry no `.message` (keys: action,file,line,reason,rule_module,
           # severity,type), so every annotation read "null". `.file` is an absolute
@@ -233,9 +227,8 @@ jobs:
             else
               "::warning file=\($f),line=\(.line // 1)::[hypatia] \($m)"
             end
-          ' hypatia-findings.json || true
+          ' hypatia-findings.json
       - name: Write step summary
-        if: steps.build.outputs.ready == 'true'
         run: |
           cat <<EOF >> "$GITHUB_STEP_SUMMARY"
           ## Hypatia Scan Results
@@ -248,13 +241,6 @@ jobs:
           | Low      | ${{ steps.scan.outputs.low }} |
           | **Total**| ${{ steps.scan.outputs.total }} |
           EOF
-      - name: Create stub findings (when Hypatia unavailable)
-        if: steps.build.outputs.ready != 'true'
-        run: |
-          echo "[]" > hypatia-findings.json
-          echo "## Hypatia Scan" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Skipped: Hypatia scanner not available in this environment." >> "$GITHUB_STEP_SUMMARY"
       - name: Upload hypatia findings
         uses: actions/upload-artifact@v7.0.1
         with:
@@ -262,7 +248,7 @@ jobs:
           path: hypatia-findings.json
           retention-days: 90
       - name: Fail on critical security findings
-        if: steps.build.outputs.ready == 'true' && steps.scan.outputs.critical > 0
+        if: steps.scan.outputs.critical > 0
         run: |
           echo "::error::Hypatia found ${{ steps.scan.outputs.critical }} critical security issue(s) — blocking merge"
           exit 1
