@@ -1,95 +1,187 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
-// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= AFFIRMATION — Cadastra, as of <UTC timestamp>
-:toc: macro
-:toclevels: 2
-
-_the No-Bullshit file: what we affirm was true and checkable at this moment._
-
-[NOTE]
-====
-*This file is a template.* Replace the `{{…}}` placeholders and the `<…>` anchor
-fields, then re-run your project's own checks in the same session before signing.
-
-An *affirmation* is a solemn declaration of the truth of a statement, made by
-someone who _declines to swear an oath_ — our truth-as-best-believed at a stamped
-instant, binding on our honesty, not a claim of infallibility. It is the third of
-the README / EXPLAINME / AFFIRMATION trio:
-
-[cols="1,3,2",options="header"]
-|===
-| File | Answers | Tense
-| `README.adoc` | _Where is this going, and why?_ — steering, intent, vision | future / aspirational
-| `EXPLAINME.adoc` | _How is it built, and what's the evidence?_ — engineering | descriptive / mechanism
-| *`AFFIRMATION.adoc`* (this file) | _What can we honestly affirm was *true and checkable* at a stamped moment?_ | a frozen instant, falsifiable
-|===
-====
-
-toc::[]
+= AFFIRMATION — Cadastra, as of 2026-10-08
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:toc:
+:icons: font
 
 == What this is, and how it works
 
-*What it is.* A short, dated, signed snapshot of what metadatastician can honestly and
-verifiably claim about *Cadastra* at one exact commit. Nothing here is
-marketing and nothing is a promise about the future — those live in the README.
-This file is the receipt.
+This file is a dated, signed snapshot of what can honestly be claimed about
+*Cadastra* at one exact commit. It is the third file of the README / EXPLAINME /
+AFFIRMATION trio. The README says where the project is going. EXPLAINME says
+how it is built. This file says what was *true and checkable* at the anchor
+below.
 
-*How it stays trustworthy.* Three moving parts:
+Every claim here comes from running the project's own checks in the session
+that wrote this file. Where the README, the Justfile or memory disagree with a
+live run, the live run wins and the disagreement is recorded.
 
-. *Ground truth, not memory.* Every claim below must be produced by _running the
-  project's own checks_ in the session that writes this file (build, tests,
-  typecheck, `just audit`). Where a status doc, the `Justfile`, or memory says
-  otherwise, the live run wins and the contradiction is flagged here.
-. *A frozen anchor.* The file names the exact commit SHA, branch, UTC timestamp,
-  and toolchain (see <<verifiable-anchor>>), so "true" always means "true _at
-  this point_". Move the SHA and this file is a draft until it is re-run.
-. *A real signature.* It is landed by a *signed git commit*; that signature over
-  this content at the anchored SHA is what makes the affirmation tamper-evident
-  and attributable — not the prose alone.
+The owner lands this file with a signed git commit. That signature over this
+content, at the anchored commit, is what makes the affirmation attributable.
 
-*We are fallible.* This is our best honest belief, not a proof of its own
-correctness. Treat it as a falsifiable claim, not gospel.
+== The epistemic contract
 
-== The epistemic contract (read this before you trust _or_ attack)
+This document records best belief at the timestamp below. It is not a
+guarantee of correctness. The only guarantee is *no intentional overclaim*.
+Where something was checked, it says how. Where something was not checked, it
+says so. A claim that later proves false is an error to fix, not a lie.
 
-This document records metadatastician's *best belief* at the timestamp below. It is
-*not a guarantee of correctness.* The only guarantee is *no intentional
-overclaim*: where something is proven we say "proven"; where it is a documented
-trust boundary, an experiment, or an unwired module, we say so; where a claim is
-the README's aspiration rather than a checked result, we say so. An honest claim
-that later turns out false is an *error to be fixed* — not a lie.
-
-*Standing invitation to refute.* You are invited to bulldoze any claim in this
-file. Bring a counter-example, a failing run, or a contradicting source.
-
-== What we affirm (fill in — delete the examples)
-
-[cols="2,1,3",options="header"]
-|===
-| Claim | Status | Evidence (command / `file:line`)
-| _e.g. The library builds clean_ | affirmed | `just build` at the anchor SHA
-| _e.g. The ABI seam typechecks_ | affirmed | `idris2 --typecheck abi.ipkg`
-| _e.g. Feature X is complete_ | aspiration | README §… (not yet checked)
-|===
-
-== What we do NOT claim
-
-* List the known gaps, trust boundaries, postulates, unwired modules, and stale
-  docs here. Silence is not affirmation — name what you have *not* verified.
+You are invited to refute any claim here with a failing run, a
+counter-example or a contradicting source.
 
 [#verifiable-anchor]
 == Verifiable anchor
 
-[cols="1,3"]
+[cols="1,2", options="header"]
 |===
-| Project | Cadastra
-| Repository | https://github.com/metadatastician/cadastra
-| Commit (SHA) | <full commit SHA at time of signing>
-| Branch | main
-| Timestamp (UTC) | <ISO-8601 UTC timestamp>
-| Toolchain | <compilers / provers / versions used to ground the claims>
-| Affirmed by | Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+| Field | Value
+| Repo | https://github.com/metadatastician/cadastra
+| Branch | `main`
+| Commit (HEAD) | `0dac3dc8824e41d795386f90441ac14d5236b2fd`
+| Permalink | https://github.com/metadatastician/cadastra/tree/0dac3dc8824e41d795386f90441ac14d5236b2fd
+| Verified (UTC) | 2026-10-08T16:42:26Z
+| Working-tree delta at verification | none apart from this file; afterwards only git-ignored build output that the checks themselves wrote
+| Toolchain | Zig 0.16.0; Idris 2 0.7.0; Agda 2.7.0.1 with agda-stdlib 2ffa8b7d; Lean 4.34.1; Coq 8.20.1; just 1.56.0; ShellCheck 0.11.0. Not available: TLC (TLA+ model checker).
 |===
 
-_Landed by a signed git commit. Verify with `git log --show-signature` that the
-anchor SHA above matches the commit that introduced this affirmation._
+[quote]
+____
+If you are reading this at a later commit, the claims may have drifted.
+Re-run the reproduction steps and write a fresh affirmation; do not trust a
+stale one.
+____
+
+== Companion documents and repo metadata (cross-check)
+
+* `README.adoc` describes Cadastra as the estate's observer: it scans the
+  `hyperpolymath` and `metadatastician` repositories, classifies each one and
+  writes `docs/status/estate-triage-report.csv`. The GitHub repository
+  description says the same. That scanning lives in shell scripts under
+  `tools/estate-migration-toolkit/scripts/`. *No test in this repository
+  exercises those scripts*, so this file affirms nothing about the scanner's
+  output or about the triage report's accuracy.
+* The code that builds and is tested is the Idris2 ABI and Zig FFI seam under
+  `src/interface/`. The Justfile's `build` and `test` recipes cover that seam
+  only.
+* This file replaces an earlier `AFFIRMATION.adoc` that was the unfilled
+  estate template (placeholder heading and anchor fields). It made no claims,
+  so it is replaced in place rather than archived. Git history keeps it.
+* This draft was first written at `b23fbe7` on 2026-10-07. `main` then
+  advanced by one commit, PR #62, which changed only
+  `.github/workflows/actions.lock`. Every check below was re-run at the new
+  anchor rather than carried forward. At `b23fbe7` the lock was out of sync
+  with two workflows; #62 fixed that.
+
+== The honest state (one breath)
+
+At the anchor, the Idris2/Zig ABI seam builds and its 9 Zig tests pass, the
+aspect and all four workflow self-tests pass, and the Agda and Coq proof
+files check. Not everything checks: the golden path `just test && just
+quality` fails at its shellcheck step, the Lean and Idris2 verification proofs
+fail, and the e2e suite is an unfilled template that runs zero tests.
+
+=== What is solid (and how we checked)
+
+* `just build` succeeds. `zig build` compiles the FFI, and `idris2 --build
+  abi.ipkg` builds all 3 ABI modules. The log was read for `Error:`, not just
+  the exit code: no errors, and two shadowing warnings in `Abi.Layout`, both
+  for the implicit `n` at lines 87 and 89.
+* `just test` succeeds. `zig build test --summary all` reports `9/9 tests
+  passed` (3 in `src/main.zig`, 6 in `test/integration_test.zig`).
+* `just aspect` passes 3 of 3: SPDX headers present, and no `believe_me`,
+  `assert_total`, `Admitted`, `sorry` or `unsafeCoerce` in source.
+* All four `tests/workflows/*` self-tests pass: lock sync 18/18 (including
+  the case that runs the checker over the repository's own workflows),
+  dogfood gate 7/7, foundation CI fixes 5/5, and workflow validation with
+  0 errors and 4 warnings (two recommended workflows absent:
+  `npm-bun-blocker.yml`, `ts-blocker.yml`).
+* `verification/proofs/agda/Properties.agda` checks with Agda (rc=0, no
+  errors). `verification/proofs/coq/TypeSafety.v` compiles with `coqc`
+  (rc=0).
+* On the anchor commit's GitHub status check rollup (read over the GraphQL
+  API), 38 of 49 contexts concluded `SUCCESS`, 10 were `SKIPPED` and 1
+  failed. The successes include CodeQL, the governance policy checks, both
+  lockfile checks, the secret scans, estate rules and the Hypatia scan. These
+  are mostly scanners over the tree, not evidence that the scanner works.
+
+=== The honest nuance you must not lose
+
+* *A passing e2e run here means nothing.* `just e2e` exits 0 with
+  `PASS=0 FAIL=0 SKIP=0`. `tests/e2e.sh` is still the template; its sections
+  are `TODO` comments.
+* *`just bench` measures the build, not the product.* It times workflow
+  validation and the Zig build and test, roughly 20 to 100 ms each.
+* *`just readiness` reports no grade.* `docs/status/READINESS.adoc` records
+  no CRG grade.
+* *Two Idris2 trees, two results.* The ABI under `src/interface/Abi/` builds.
+  The separate proof tree under `verification/proofs/idris2/` does not (see
+  the table). Read `idris2 --check` output for `Error:`; with Idris 2 0.7.0
+  it can exit 0 while printing errors.
+
+=== Known-incomplete but honestly fenced
+
+* `verification/proofs/tlaplus/StateMachine.tla` was *not checked, rather
+  than found failing*: TLC is not installed here.
+* The estate-scanning scripts were not run. Running them scans live GitHub
+  repositories, which is outside a read-only affirmation pass.
+* The `SonarQube` workflow concluded `FAILURE`. Its log was not read for this
+  file.
+* Twelve App check suites were still `QUEUED` on the anchor commit and
+  reported nothing, among them CodeRabbit, Codecov, GitGuardian, Semgrep and
+  SonarQube Cloud. Their output was not read for this file.
+
+=== Outstanding / weak / refuted (no spin)
+
+[cols="2,3", options="header"]
+|===
+| Check | Result at the anchor
+| `just quality` (the golden path named in `CLAUDE.md`) and `just lint` | Refuted, rc=123. `fmt-check` passes, then ShellCheck reports 68 findings across 15 scripts: 2 errors, 14 warnings, 48 info, 4 style (for example SC2261 and SC2076).
+| CI on the anchor: failures | `SonarQube` concluded `FAILURE`, the only failing rollup context. Check suites absent from the rollup: `STARTUP_FAILURE` for OSSF Scorecard. A startup failure means no jobs ran.
+| Lean, `lean ApiTypes.lean` | Refuted, rc=1, 6 errors starting at `ApiTypes.lean:39` (`Application type mismatch` in `Nat.zero_le max`).
+| Idris2 proofs, `idris2 --check` on each `verification/proofs/idris2` file | Refuted, 5 of 6 files: errors in `Types.idr` (4), `ABI/Compliance.idr` (6), `ABI/Layout.idr` (6), `ABI/Platform.idr` (2) and `ABI/Pointers.idr` (2), for example `Undefined name LTE`. `ABI/Foreign.idr` checks.
+| `just e2e` | Vacuous: zero tests run (see above).
+|===
+
+== Reproduce it yourself
+
+From a clone checked out at the anchor commit:
+
+[source,bash]
+----
+git checkout 0dac3dc8824e41d795386f90441ac14d5236b2fd
+just build && just test aspect e2e
+just quality                                               # rc=123 at lint
+(cd src/interface/ffi && zig build test --summary all)   # 9/9 tests
+for t in tests/workflows/*.sh; do bash "$t"; done         # lock-sync: 18/18
+(cd verification/proofs/agda && agda Properties.agda)
+(cd verification/proofs/coq && coqc TypeSafety.v)
+(cd verification/proofs/lean4 && lean ApiTypes.lean)      # rc=1
+(cd verification/proofs/idris2 && for f in Types.idr ABI/*.idr; do idris2 --check "$f"; done)  # look for "Error:"
+----
+
+Agda needs agda-stdlib. Point `AGDA_DIR` at a directory whose `libraries` file
+names the stdlib's `.agda-lib` and whose `defaults` file says
+`standard-library`.
+
+== One-line characterisation (quote this)
+
+At `0dac3dc`, Cadastra's Idris2/Zig ABI seam builds and passes its 9 tests,
+and two of four proof languages check. Its golden path fails at ShellCheck,
+its e2e suite is an empty template, and nothing affirms the estate scanner
+itself.
+
+== Joint attestation
+
+*Engineering party (AI).* Claude (`claude-opus-5-5`), session run at
+2026-10-08T16:42:26Z, ran every check above and wrote this file. The wording
+is a faithful report of those runs. Nothing was copied forward from an earlier
+affirmation.
+
+*Owner.* Jonathan D.A. Jewell signs by committing this file with an SSH
+signing key:
+
+[source,bash]
+----
+git commit -S -s AFFIRMATION.adoc -m "docs: affirm state at 0dac3dc8"
+git log --show-signature -1
+----
