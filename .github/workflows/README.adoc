@@ -18,12 +18,24 @@ either loses real function — keep both.
 
 == Secret scanning is single-sourced
 
-`secret-scanner.yml` calls the standards reusable, which produces the three
-required-but-independent contexts `scan / gitleaks` (working tree + full git
-history + an AsciiDoc mirror pass), `scan / rust-secrets` and
-`scan / shell-secrets`. An inline TruffleHog job was removed: the reusable
-deliberately retired TruffleHog as redundant with gitleaks, so re-adding it was
-duplicated work, not extra coverage.
+`secret-scanner.yml` calls the standards reusable, which produces three
+independent contexts: `scan / gitleaks` (working tree + full git history + an
+AsciiDoc mirror pass), `scan / rust-secrets` and `scan / shell-secrets`. An
+inline TruffleHog job was removed: the reusable deliberately retired TruffleHog
+as redundant with gitleaks, so re-adding it was duplicated work, not extra
+coverage.
+
+Only `scan / gitleaks` is a *required* status check on `main`
+(repository ruleset `Secret-Scan-Floor`). The other two report and can fail, but
+they are not in the required set today, so a PR can merge with them red while
+`gitleaks` is green. Making them required is a ruleset change, not a workflow
+change — decide it in the ruleset so the requirement has one home.
+
+Known coverage gap, stated rather than implied: the full-history pass inherits
+gitleaks' default path allowlist, whose `doc` alternative drops `*.adoc` and
+`*.asciidoc` files, and the AsciiDoc mirror pass scans a `--no-git` copy of the
+*current tree*. An AsciiDoc secret that was committed and later deleted is
+therefore invisible to both. Every other file class is covered end to end.
 
 Two rules for that caller, both learned the hard way:
 
