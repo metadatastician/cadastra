@@ -1,0 +1,135 @@
+# SPDX-License-Identifier: MPL-2.0
+#
+# TEMPORARY validation probe — DELETED IN THE NEXT COMMIT.
+#
+# Runs the official/Accepted-static-analysis tooling against the PR head and the
+# base commit, on a runner (the development sandbox cannot fetch actionlint,
+# yq, gawk or the gh-actions-lock release assets), and reports every result as a
+# workflow annotation so it is readable through the check-runs API.
+#
+# Measured, per tree:
+#   * gh actions-lock --verify   (official lockfile verifier)
+#   * actionlint                 (current release, via go install)
+#   * zizmor                     (current release, via pipx)
+#   * tests/workflows/*.sh       (the repository's own workflow tests; these need
+#                                 gawk and yq, neither available in the sandbox)
+#
+# It deliberately has NO `uses:` of its own, so it cannot desync the lockfile it
+# is measuring. It also removes itself from the measured head tree, so the head
+# measurement is of the branch content, not of this probe.
+name: Validation Probe (temporary)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  BASE_SHA: e0507dcd439e1c6518cc1eaf309d16ef7c36174e
+
+jobs:
+  probe:
+    name: official tooling probe (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out head and base without actions/checkout
+        env:
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' "${TOKEN}" | base64 -w0)"
+          git init -q .
+          git remote add origin "https://github.com/${REPO}.git"
+          git -c http.extraheader="${AUTH}" fetch -q --depth 1 origin "${SHA}"
+          git checkout -q FETCH_HEAD
+          git worktree add -q --detach /tmp/head HEAD
+          git -c http.extraheader="${AUTH}" fetch -q --depth 1 origin "${BASE_SHA}"
+          git worktree add -q --detach /tmp/base "${BASE_SHA}"
+          rm -f /tmp/head/.github/workflows/validation-probe.yml
+          echo "head: $(git -C /tmp/head rev-parse HEAD)"
+          echo "base: $(git -C /tmp/base rev-parse HEAD)"
+
+      - name: Install validation tooling (best effort, never fatal)
+        run: |
+          set +e
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gawk jq curl xz-utils >/dev/null
+          mkdir -p "$HOME/bin"
+          curl -sSL -o /tmp/al.tgz https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          tar -xzf /tmp/al.tgz -C "$HOME/bin" actionlint
+          curl -sSL -o "$HOME/bin/yq" https://github.com/mikefarah/yq/releases/download/v4.54.2/yq_linux_amd64
+          chmod +x "$HOME/bin/yq"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          python3 -m pip install --quiet --user --break-system-packages zizmor \
+            || sudo pip install --quiet --break-system-packages zizmor \
+            || pipx install zizmor \
+            || true
+          gh extension install github/gh-actions-lock || true
+          export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+          for c in gawk jq actionlint yq zizmor; do
+            if command -v "$c" >/dev/null 2>&1; then echo "$c: $($c --version 2>&1 | head -1)"; else echo "$c: MISSING"; fi
+          done
+          gh actions-lock --help >/dev/null 2>&1 && echo "gh actions-lock: installed" || echo "gh actions-lock: MISSING"
+          echo "::warning title=tooling availability::gawk=$(command -v gawk >/dev/null && echo yes || echo no) actionlint=$(command -v actionlint >/dev/null && echo yes || echo no) yq=$(command -v yq >/dev/null && echo yes || echo no) zizmor=$(command -v zizmor >/dev/null && echo yes || echo no) ghal=$(gh actions-lock --help >/dev/null 2>&1 && echo yes || echo no)"
+          exit 0
+
+      - name: Repository workflow tests (needs gawk + yq)
+        run: |
+          set +e
+          cd /tmp/head
+          summary=""
+          for t in tests/workflows/*.sh; do
+            out="$(bash "$t" 2>&1)"; rc=$?
+            tailtxt="$(printf '%s' "$out" | grep -E 'Results:|PASSED|FAILED|required' | tail -2 | tr '\n' '|')"
+            summary="${summary}${t} => rc=${rc} :: ${tailtxt} ;; "
+          done
+          echo "::warning title=repo workflow tests (head 61160c5)::${summary}"
+          exit 0
+
+      - name: actionlint and zizmor, head vs base
+        run: |
+          set +e
+          for tree in /tmp/head /tmp/base; do
+            cd "$tree"
+            al=""; alrc="skipped"; aln="n/a"; al_sc="n/a"
+            if command -v actionlint >/dev/null 2>&1; then
+              al="$(actionlint -oneline .github/workflows/*.yml 2>&1)"; alrc=$?
+              aln="$(printf '%s\n' "$al" | grep -c . || true)"
+              al_sc="$(printf '%s\n' "$al" | grep -c 'secret-scanner' || true)"
+            fi
+            z=""; zn="n/a"; zrules="n/a"; zsc="n/a"
+            if command -v zizmor >/dev/null 2>&1; then
+              z="$(zizmor --format json .github/workflows 2>/dev/null)"
+              zn="$(printf '%s' "$z" | jq 'length')"
+              zrules="$(printf '%s' "$z" | jq -r '[.[].ident]|group_by(.)|map("\(.[0])=\(length)")|join(",")')"
+              zsc="$(printf '%s' "$z" | jq '[.[]|select((.locations[0].symbolic.key.Local.given_path // "")|test("secret-scanner"))]|length')"
+            fi
+            echo "::warning title=actionlint ${tree} rc=${alrc} problems=${aln} secret-scanner=${al_sc}::$(printf '%s' "$al" | head -c 1200 | tr '\n' '|')"
+            echo "::warning title=zizmor ${tree} findings=${zn} secret-scanner=${zsc}::${zrules}"
+          done
+          exit 0
+
+      - name: gh actions-lock --verify, head vs base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          for tree in /tmp/head /tmp/base; do
+            cd "$tree"
+            if ! gh actions-lock --help >/dev/null 2>&1; then
+              echo "::warning title=gh actions-lock --verify ${tree}::SKIPPED - extension unavailable"
+              continue
+            fi
+            out="$(gh actions-lock --verify 2>&1)"; rc=$?
+            fails="$(printf '%s\n' "$out" | grep -c '✗' || true)"
+            rejects="$(printf '%s\n' "$out" | grep -c 'Actions backend rejects' || true)"
+            wf="$(printf '%s\n' "$out" | grep -E '^[0-9]+ of [0-9]+ workflows failed' | tail -1)"
+            verdict="$(printf '%s\n' "$out" | grep -iE 'workflow lockfile is (valid|invalid)|up to date|no changes|Re-run' | tail -2 | tr '\n' '|')"
+            echo "::warning title=gh actions-lock --verify ${tree} rc=${rc} failures=${fails} sha-ref-rejects=${rejects}::${wf} | ${verdict} | $(printf '%s' "$out" | tail -c 1800 | tr '\n' '|')"
+          done
+          exit 0

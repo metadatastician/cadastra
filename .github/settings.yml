@@ -7,23 +7,32 @@
 # applied by the probot/settings app when changes are pushed to the default
 # branch. Install the app at: https://github.com/apps/settings
 #
-# Repository settings — configured for paint-type.
+# Repository settings — configured for metadatastician/cadastra.
+#
+# Every value below is reconciled against the LIVE repository
+# (`gh api repos/metadatastician/cadastra`, read 2026-11-08), not inherited from
+# the estate template. This block previously carried a DIFFERENT repository's
+# identity -- name "paint-type", that project's description and homepage, and
+# that project's wiki/downloads/rebase toggles. Because probot/settings applies
+# this file on every push to the default branch, a single app run against the
+# copied block would have renamed this repository and flipped four settings that
+# have nothing to do with it.
 
 # ─── Repository Settings ───────────────────────────────────────────────────────
 
 repository:
-  name: "paint-type"
-  description: "Cross-platform open-source image editor — capable enough for real work, simple enough to reach for without thinking"
-  homepage: "https://github.com/metadatastician/paint-type"
+  name: "cadastra"
+  description: "Scans Hyperpolymath and Metadatastician repositories, classifies their state, flags estate-policy issues, and maintains the canonical inventory and triage reports."
+  homepage: "https://github.com/metadatastician/cadastra"
   private: false
   has_issues: true
   has_projects: true
-  has_wiki: false
-  has_downloads: true
+  has_wiki: true
+  has_downloads: false
   default_branch: main
   allow_squash_merge: true
   allow_merge_commit: true
-  allow_rebase_merge: true
+  allow_rebase_merge: false
   delete_branch_on_merge: true
   enable_automated_security_fixes: true
   enable_vulnerability_alerts: true
@@ -111,26 +120,27 @@ labels:
     color: "006b75"
     description: "Formal proof has been completed and verified"
 
-# ─── Branch Protection ─────────────────────────────────────────────────────────
-
-branches:
-  - name: "main"
-    protection:
-      required_pull_request_reviews:
-        required_approving_review_count: 1
-        dismiss_stale_reviews: true
-        require_code_owner_reviews: true
-        require_last_push_approval: true
-        required_review_thread_resolution: true
-      required_status_checks:
-        strict: true
-        contexts:
-          - "Cargo check + clippy + fmt"
-          - "Cargo test"
-          - "analyze (javascript-typescript, none)"
-          - "openssf-compliance"
-      enforce_admins: true
-      required_signatures: true
-      restrictions: null
-      allow_force_pushes: false
-      allow_deletions: false
+# ─── Branch protection ─────────────────────────────────────────────────────────
+#
+# DELIBERATELY ABSENT. Protection of `main` is owned by rulesets, not by this
+# file:
+#
+#   * repository ruleset `Secret-Scan-Floor` (id 24310216, active) requires the
+#     `scan / gitleaks` status check on the default branch. It is authoritative
+#     for the secret-scanning gate.
+#   * organisation rulesets `EstateBranching`, `Branch-Floor`,
+#     `Branch-Signatures` and `App Permissions` supply the pull-request,
+#     linear-history, signature and app-permission rules.
+#
+# The `branches:` block that used to sit here was inherited from another
+# repository and required four contexts this repository does not produce:
+# `Cargo check + clippy + fmt`, `Cargo test`, `analyze (javascript-typescript,
+# none)` and `openssf-compliance`. Only the last is emitted here; the first
+# three name a Rust/TypeScript toolchain cadastra does not have. Applied by
+# probot, that block would have rebuilt `main`'s protection around checks that
+# can never report, making the branch permanently unmergeable while silently
+# disagreeing with the ruleset that actually gates it. Two sources of truth for
+# one branch is the defect; the ruleset is the surviving one.
+#
+# Do not re-add a `branches:` block. Change the ruleset instead, so the
+# requirement stays visible in exactly one place.
