@@ -59,6 +59,15 @@ jobs:
           echo "---- raw output ----"
           printf '%s\n' "$out"
           echo "---- exit ${rc} ----"
-          body="$(printf '%s' "$out" | head -c 3000 | sed -e 's/\r//g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/%0A/g')"
-          echo "::warning title=official gh actions-lock --no-fix (exit ${rc})::${body}"
+          esc() {
+            awk '{ gsub(/%/, "%25"); gsub(/\r/, "%0D"); if (NR > 1) printf "%0A"; printf "%s", $0 }'
+          }
+          total=$(printf '%s' "$out" | wc -c)
+          echo "total bytes: ${total}"
+          printf '%s' "$out" | head -c 28000 | esc > /tmp/p1
+          echo "::warning title=official gh actions-lock --no-fix (exit ${rc}) part 1/2::$(cat /tmp/p1)"
+          if [ "$total" -gt 28000 ]; then
+            printf '%s' "$out" | tail -c 28000 | esc > /tmp/p2
+            echo "::warning title=official gh actions-lock --no-fix (exit ${rc}) part 2/2 (tail)::$(cat /tmp/p2)"
+          fi
           exit 0
