@@ -51,6 +51,7 @@ sonar-project.properties   # SonarCloud analysis config; the SonarQube scan acti
 .oikos.yml                 # OikosBot reads its repository configuration at the root
 GEMINI.md                  # root-level agent discovery pointer to CLAUDE.md
 mise.toml                  # mise discovers its tool configuration at the root
+.gitleaksignore           # gitleaks reads per-finding suppressions from the SCAN SOURCE root, and the estate reusable's gitleaks jobs run with --source . (the repository root) -- .github/.gitleaksignore would never be read. Fingerprint-scoped only: one historical false positive, documented in the file's header. Added 2026-11-08 after the full-history pass began failing on it.
 
 # ─── Directories ─────────────────────────────────────────────────────────────
 .githooks/                 # git hooks (install.sh, pre-push, validate-a2ml.sh); tool-required at root — git's core.hooksPath resolves relative to the worktree root, exactly like .devcontainer/. Added 2026-07-16: rsr-template-repo TRACKS .githooks/ but omits it from this allowlist, so the template fails its own scripts/check-root-shape.sh and every repo born from it inherits that failure. Allow-listed here via the mechanism this file documents ("or added here with a justification comment"). The same entry is needed upstream — reported, not patched from here (changing the canonical template affects every estate repo; doctrine 11, stop-first).

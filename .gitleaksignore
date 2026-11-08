@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: MPL-2.0
+#
+# .gitleaksignore — per-FINDING suppressions for metadatastician/cadastra.
+#
+# One fingerprint per line:
+#
+#     <commit>:<path>:<rule-id>:<line>
+#
+# A fingerprint suppresses exactly one finding, in exactly one commit, at
+# exactly one line. It is the narrowest suppression gitleaks offers, and it is
+# deliberately not an allowlist: no rule is weakened, no path is blinded, the
+# estate baseline is still staged and enforced, and the same pattern appearing
+# in any other commit still fails the gate (a different commit produces a
+# different fingerprint). Prefer this over `.gitleaks.toml` entries whenever the
+# thing to suppress is a single historical fact that cannot be fixed forward.
+#
+# ── The one entry, and why it is a false positive ─────────────────────────────
+#
+# `.machine_readable/descriptiles/CLADE.a2ml` derives its UUIDv5 from the
+# registry specification and, in an EARLIER revision of the file, showed the
+# derivation with worked examples copied from the registry, one per line, in the
+# form "<registry-name>  -> <UUIDv5>". The literal historical line is in commit
+# 91e4666; it is not reproduced here because a scanner config that quotes its own
+# fixtures is itself a finding (the working-tree pass scans this file too).
+#
+# `generic-api-key` reads that shape as a key/value assignment with high-entropy
+# material and reports the UUID as a credential. It is not one: the "value" is a
+# UUIDv5 that anyone can recompute from the rule printed directly above it
+# (`uuid = UUIDv5(namespace = URL, name = "github.com/<owner>/<name>")`), and the
+# current revision of the file has been reformatted to a table
+# ("<UUIDv5> <- <registry-name>") precisely so the rule no longer matches.
+#
+# The finding survives only in history: commit 91e4666 (2026-07-16) still
+# contains the arrow form, so the reusable's full-history gitleaks pass reports
+# it on every run while the working-tree pass is clean. History cannot be
+# rewritten to remove it — `main` is protected against non-fast-forward pushes —
+# so the finding is suppressed by fingerprint and nothing else is touched.
+#
+# Verified against the pinned scanner's rule set: reproducing the reusable's
+# full-history pass (gitleaks detect --source . --config .gitleaks-estate.toml)
+# on a full clone reports exactly this one finding and exits 1; with this file in
+# place it reports "no leaks found" and exits 0.
+#
+# Do NOT add an entry for a real secret. Rotate the credential and purge it from
+# history; suppressing it here would leave it live and invisible.
+91e466683bb899e35114211b997c08d98fa3cf96:.machine_readable/descriptiles/CLADE.a2ml:generic-api-key:13
