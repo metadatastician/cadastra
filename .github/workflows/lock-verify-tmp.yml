@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: MPL-2.0
+#
+# TEMPORARY probe — DELETE BEFORE MERGE.
+#
+# Runs the OFFICIAL gh actions-lock (github/gh-actions-lock) against this PR head
+# and reports its read-only verdict (`--no-fix`) as a workflow annotation, so the
+# result is readable through the check-runs API. It exists because the tool's
+# release assets are not reachable from the development sandbox; a GitHub runner
+# can install it.
+#
+# It deliberately has NO `uses:` of its own (it checks out with git, like
+# lock-sync-gate.yml), so adding it cannot desync actions.lock and cannot be the
+# thing it is measuring.
+name: Lock Verify (temporary)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: official gh actions-lock (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out without actions/checkout
+        env:
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' "${TOKEN}" | base64 -w0)"
+          git init -q .
+          git remote add origin "https://github.com/${REPO}.git"
+          git -c http.extraheader="${AUTH}" fetch -q --depth 1 origin "${SHA}"
+          git checkout -q FETCH_HEAD
+          echo "checked out ${SHA}"
+
+      - name: Install the official extension
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh extension install github/gh-actions-lock
+          gh actions-lock --help >/dev/null
+          echo "installed"
+
+      - name: Run official tool, read-only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          out="$(gh actions-lock --no-fix 2>&1)"
+          rc=$?
+          set -e
+          echo "---- raw output ----"
+          printf '%s\n' "$out"
+          echo "---- exit ${rc} ----"
+          body="$(printf '%s' "$out" | head -c 3000 | sed -e 's/\r//g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/%0A/g')"
+          echo "::warning title=official gh actions-lock --no-fix (exit ${rc})::${body}"
+          exit 0
