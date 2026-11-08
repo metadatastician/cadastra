@@ -59,15 +59,13 @@ jobs:
           echo "---- raw output ----"
           printf '%s\n' "$out"
           echo "---- exit ${rc} ----"
-          esc() {
-            awk '{ gsub(/%/, "%25"); gsub(/\r/, "%0D"); if (NR > 1) printf "%0A"; printf "%s", $0 }'
-          }
-          total=$(printf '%s' "$out" | wc -c)
-          echo "total bytes: ${total}"
-          printf '%s' "$out" | head -c 28000 | esc > /tmp/p1
-          echo "::warning title=official gh actions-lock --no-fix (exit ${rc}) part 1/2::$(cat /tmp/p1)"
-          if [ "$total" -gt 28000 ]; then
-            printf '%s' "$out" | tail -c 28000 | esc > /tmp/p2
-            echo "::warning title=official gh actions-lock --no-fix (exit ${rc}) part 2/2 (tail)::$(cat /tmp/p2)"
-          fi
+          bytes=$(printf '%s' "$out" | wc -c)
+          findings=$(printf '%s' "$out" | grep -c 'Actions backend rejects' || true)
+          holders=$(printf '%s' "$out" | grep -o 'used by [^,]*' | sort -u | tr '\n' ';' || true)
+          deps=$(printf '%s' "$out" | grep -o 'lock entry for [^,]*' | sort -u | tr '\n' ';' || true)
+          echo "::warning title=gh actions-lock summary (exit ${rc}, ${bytes} bytes)::findings=${findings} holders=[${holders}] deps=[${deps}]"
+          head="$(printf '%s' "$out" | head -c 3000 | tr '\n' '|' | tr -d '\r')"
+          echo "::warning title=gh actions-lock head::${head}"
+          tailtxt="$(printf '%s' "$out" | tail -c 3000 | tr '\n' '|' | tr -d '\r')"
+          echo "::warning title=gh actions-lock tail::${tailtxt}"
           exit 0
